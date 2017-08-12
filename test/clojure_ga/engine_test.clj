@@ -26,7 +26,13 @@
     (is (thrown? IllegalArgumentException (apply engine/create p-cross-too-high)))
     (is (thrown? IllegalArgumentException (apply engine/create p-cross-too-low)))
     (is (thrown? IllegalArgumentException (apply engine/create p-mutation-too-high)))
-    (is (thrown? IllegalArgumentException (apply engine/create p-mutation-too-low)))))
+    (is (thrown? IllegalArgumentException (apply engine/create p-mutation-too-low))))
+  (testing "accepts an optional random generator, and saves it"
+    (let [random-generator :random-generator-function
+          generator-enhanced-arguments (vec (concat reasonable-default-arguments [:random-generator random-generator]))]
+      (is (= random-generator (:random-generator (apply engine/create generator-enhanced-arguments))))))
+    (testing "a default random generator is automatically provided, when not in the options"
+    (is (:random-generator (apply engine/create reasonable-default-arguments)))))
 
 (deftest engine-add-instances
   (testing "add first generation solutions"
