@@ -14,7 +14,6 @@
 (def p-mutation-too-high [:p-cross 0.75 :p-mutation 1.01 :op-cross (fn [a b] a) :op-mutation (fn [a] a)])
 (def p-mutation-too-low [:p-cross 0.75 :p-mutation -0.01 :op-cross (fn [a b] a) :op-mutation (fn [a] a)])
 
-
 (deftest engine-creation
   (testing "the engine can be instantiated"
     (is (apply engine/create reasonable-default-arguments)))
@@ -28,4 +27,8 @@
     (is (thrown? IllegalArgumentException (apply engine/create p-cross-too-low)))
     (is (thrown? IllegalArgumentException (apply engine/create p-mutation-too-high)))
     (is (thrown? IllegalArgumentException (apply engine/create p-mutation-too-low)))))
+
+(deftest engine-add-instances
+  (testing "add first generation solutions"
+    (is (engine/add-first-generation-solutions {} []))))
 

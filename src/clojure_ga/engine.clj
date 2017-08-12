@@ -15,3 +15,6 @@
 
 (defn create [ & parameters]
   (validate (apply hash-map parameters)))
+
+(defn add-first-generation-solutions [engine sequence]
+  (assoc engine :first-generation sequence))
