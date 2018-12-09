@@ -1,6 +1,8 @@
 # clojure-ga
 
-A Clojure library designed to ... well, that part is up to you.
+WIP for a Clojure library to solve a problem using a GA approach.
+
+Also part of an ongoing exercise to do TDD in Clojure.
 
 ## Usage
 
