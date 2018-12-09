@@ -89,15 +89,23 @@
 
 (deftest algorithm-step
   (testing "performing a simulation step returns a new simulation instance"
-    (let [algorithm (reify Algorithm (advance [this engine population] {:engine :something}))
+    (let [algorithm (reify Algorithm
+                      (advance [this engine population]
+                        {:engine engine
+                         :algorithm this
+                         :population population}))
           simulation (engine/create-simulation :an-engine algorithm)
-          new-simulation (engine/advance simulation)]
+          new-simulation (engine/step simulation)]
       (is (not (identical? simulation new-simulation)))
-      (is (:engine new-simulation))))
+      (is (= :an-engine (:engine new-simulation)))))
   (testing "performing a simulation step is delegated to an external algorithm"
-    (let [algorithm (reify Simulator
-                      (advance [this] {:engine :something}))]
-      (is (= {:engine :something} (engine/advance (engine/create-simulation :an-engine algorithm)))))))
+    (let [algorithm (reify Algorithm
+                      (advance [this engine population]
+                        {:engine engine
+                         :population population
+                         :algorithm this}))]
+      (is (= {:engine :an-engine :population [] :algorithm algorithm}
+             (into {} (engine/step (engine/create-simulation :an-engine algorithm))))))))
 
 
 (comment (deftest end-to-end-scenario

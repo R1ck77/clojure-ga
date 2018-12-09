@@ -64,7 +64,7 @@
           :population  #(conj % (create-instance simulation))))
 
 (defprotocol Simulator
-  (advance [this] "execute a simulation step. Returns a new simulation"))
+  (step [this] "execute a simulation step. Returns a new simulation"))
 
 (defprotocol Algorithm
 ;;; TODO/FIXME use the associative abstraction!
@@ -76,8 +76,8 @@
   (addInstance [this]
     (add-instance this))
   Simulator
-  (advance [this]
-    (let [{:keys [new-engine new-algorithm new-population]} (advance (:algorithm this) (:engine this) (:population this))]
-      (create-simulation new-engine new-algorithm new-population))))
+  (step [this]
+    (let [{:keys [engine algorithm population]} (advance (:algorithm this) (:engine this) (:population this))]
+      (create-simulation engine algorithm population))))
 
 
