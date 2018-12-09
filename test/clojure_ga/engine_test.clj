@@ -34,7 +34,7 @@
     (testing "a default random generator is automatically provided, when not in the options"
     (is (:random-generator (apply engine/create reasonable-default-arguments)))))
 
-(deftest engine-add-instances
+(deftest engine-add-first-generation-solutions
   (testing "add first generation solutions"
     (is (engine/add-first-generation-solutions {} []))))
 
