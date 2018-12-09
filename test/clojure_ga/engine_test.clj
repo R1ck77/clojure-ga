@@ -49,3 +49,10 @@
   (testing "add first generation solutions"
     (is (engine/add-first-generation-solutions {} []))))
 
+(deftest simulation-creation
+  (testing "a simulation can be created with no initial population"
+    (is (= [] (:population (engine/create-simulation)))))
+  (testing "a simulation can be created with an initial population"
+    (let [initial-population [:a :b :c :d]]
+      (is (identical? initial-population
+                      (:population (engine/create-simulation initial-population)))))))

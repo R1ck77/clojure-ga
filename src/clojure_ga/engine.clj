@@ -32,16 +32,6 @@
   ConfigValidator
   (validate [this] (validate-arguments this)))
 
-(defrecord Simulation [engine population])
-
-(defprotocol GaStepper
-  (step [this] "Perform a genetic algorithm step on a population, returns a new simulation"))
-
-(extend-type Engine
-  GaStepper
-  (step [this]
-    ))
-
 (defn create-engine [ & parameters]
   (validate
    (map->Engine (merge {:random-generator rand
@@ -53,5 +43,21 @@
   (assoc engine :first-generation sequence))
 
 
+(defrecord Simulation [population])
 
+(defn create-simulation
+  "Create a new Simulation instance"
+  ([]
+   (create-simulation []))
+  ([population]
+   (->Simulation population)) )
+
+(comment
+  (defprotocol GaStepper
+    (step [this] "Perform a genetic algorithm step on a population, returns a new simulation"))
+
+  (extend-type Engine
+    GaStepper
+    (step [this]
+      )))
 
