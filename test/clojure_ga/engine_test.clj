@@ -1,7 +1,7 @@
 (ns clojure-ga.engine-test
   (:require [clojure.test :refer :all]
             [clojure-ga.engine :as engine])
-  (:import [clojure_ga.engine PopulationProvider]))
+  (:import [clojure_ga.engine PopulationProvider Stepper]))
 
 (def reasonable-default-arguments [:p-cross 0.75
                                    :p-mutation 0.01
@@ -56,11 +56,11 @@
 
 (deftest simulation-creation
   (testing "a simulation can be created with no initial population"
-    (is (= [] (:population (engine/create-simulation nil)))))
+    (is (= [] (:population (engine/create-simulation nil nil)))))
   (testing "a simulation can be created with an initial population"
     (let [initial-population [:a :b :c :d]]
       (is (identical? initial-population
-                      (:population (engine/create-simulation nil initial-population)))))))
+                      (:population (engine/create-simulation nil nil initial-population)))))))
 
 (defn create-engine-creating-set-values [values]
   (let [current (atom 0)]
@@ -75,15 +75,26 @@
 (deftest population-generation
   (testing "creating a new genetic instance returns a new simulation with the same engine"
     (let [engine (create-engine-creating-set-values [])
-          new-simulation (engine/addInstance (engine/create-simulation engine))]
+          new-simulation (engine/addInstance (engine/create-simulation engine nil))]
       (is (identical? engine (:engine new-simulation)))))
   (testing "a simulation can create a new genetic instance using the op-generation function"
     (let [engine (create-engine-creating-set-values [:new-instance :another-instance])
-          new-simulation (engine/addInstance (engine/create-simulation engine))]
+          new-simulation (engine/addInstance (engine/create-simulation engine nil))]
       (is (= [:new-instance] (:population new-simulation)))))
   (testing "the new instance is appended to the ones already present"
     (let [engine (create-engine-creating-set-values [:new-instance :another-instance])]
       (is (= [:original-instance :new-instance :another-instance]
-             (:population (-> (engine/create-simulation engine [:original-instance])
+             (:population (-> (engine/create-simulation engine nil [:original-instance])
                               engine/addInstance engine/addInstance)))))))
 
+(deftest algorithm-step
+  (testing "performing a simulation step returns a new simulation instance"
+    (let [algorithm (reify Stepper (step [this] {:engine :something}))
+          simulation (engine/create-simulation :an-engine algorithm)
+          new-simulation (engine/step simulation)]
+      (is (not (identical? simulation new-simulation)))
+      (is (:engine new-simulation))))
+  (testing "performing a simulation step is delegated to an external algorithm"
+    (let [algorithm (reify Stepper
+                      (step [this] {:engine :something}))]
+      (is (= {:engine :something} (engine/step (engine/create-simulation :an-engine algorithm)))))))

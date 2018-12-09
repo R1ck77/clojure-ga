@@ -43,14 +43,14 @@
 (defn add-first-generation-solutions [engine sequence]
   (assoc engine :first-generation sequence))
 
-(defrecord Simulation [engine population])
+(defrecord Simulation [engine algorithm population])
 
 (defn create-simulation
   "Create a new Simulation instance"
-  ([engine]
-   (create-simulation engine []))
-  ([engine population]
-   (->Simulation engine population)))
+  ([engine algorithm]
+   (create-simulation engine algorithm []))
+  ([engine algorithm population]
+   (->Simulation engine algorithm population)))
 
 (defprotocol PopulationProvider
   (addInstance [this] "add a new instance to the population"))
@@ -62,9 +62,15 @@
   (update simulation
           :population  #(conj % (create-instance simulation))))
 
+(defprotocol Stepper
+  (step [this] "execute a simulation step. Returns a new simulation"))
+
 (extend-type Simulation
   PopulationProvider
   (addInstance [this]
-    (add-instance this)))
+    (add-instance this))
+  Stepper
+  (step [this]
+    (step (:algorithm this))))
 
 
