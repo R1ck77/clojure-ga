@@ -26,6 +26,7 @@
     (nil? (:op-mutation engine)) (throw (IllegalArgumentException. "missing mutation function"))
     (nil? (:op-cross engine)) (throw (IllegalArgumentException. "missing crossing function"))
     (nil? (:op-generation engine)) (throw (IllegalArgumentException. "missing generator function"))
+    (nil? (:op-fitness engine)) (throw (IllegalArgumentException. "missing fitness function"))
     :default engine))
 
 (extend-type Engine
@@ -42,22 +43,28 @@
 (defn add-first-generation-solutions [engine sequence]
   (assoc engine :first-generation sequence))
 
-
-(defrecord Simulation [population])
+(defrecord Simulation [engine population])
 
 (defn create-simulation
   "Create a new Simulation instance"
-  ([]
-   (create-simulation []))
-  ([population]
-   (->Simulation population)) )
+  ([engine]
+   (create-simulation engine []))
+  ([engine population]
+   (->Simulation engine population)))
 
-(comment
-  (defprotocol GaStepper
-    (step [this] "Perform a genetic algorithm step on a population, returns a new simulation"))
+(defprotocol PopulationProvider
+  (addInstance [this] "add a new instance to the population"))
 
-  (extend-type Engine
-    GaStepper
-    (step [this]
-      )))
+(defn- create-instance [simulation]
+  ((:op-generation (:engine simulation))))
+
+(defn- add-instance [simulation]
+  (update simulation
+          :population  #(conj % (create-instance simulation))))
+
+(extend-type Simulation
+  PopulationProvider
+  (addInstance [this]
+    (add-instance this)))
+
 
