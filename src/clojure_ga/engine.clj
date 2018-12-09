@@ -7,6 +7,7 @@
                    p-mutation
                    op-cross
                    op-mutation
+                   op-generation
                    random-generator])
 
 (defprotocol ConfigValidator
@@ -24,7 +25,7 @@
     (p-out-of-range? (:p-mutation engine)) (throw (IllegalArgumentException. "mutation probability out of range"))
     (nil? (:op-mutation engine)) (throw (IllegalArgumentException. "missing mutation function"))
     (nil? (:op-cross engine)) (throw (IllegalArgumentException. "missing crossing function"))
-    (nil? (:op-generate engine)) (throw (IllegalArgumentException. "missing solution generator function"))
+    (nil? (:op-generation engine)) (throw (IllegalArgumentException. "missing generator function"))
     :default engine))
 
 (extend-type Engine
