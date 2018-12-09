@@ -3,6 +3,7 @@
 (def default-p-cross 0.2)
 (def default-m-cross 0.001)
 
+;;; TODO/FIXME rename to Config
 (defrecord Engine [p-cross
                    p-mutation
                    op-cross
@@ -62,15 +63,21 @@
   (update simulation
           :population  #(conj % (create-instance simulation))))
 
-(defprotocol Stepper
-  (step [this] "execute a simulation step. Returns a new simulation"))
+(defprotocol Simulator
+  (advance [this] "execute a simulation step. Returns a new simulation"))
+
+(defprotocol Algorithm
+;;; TODO/FIXME use the associative abstraction!
+  (advance [algorithm config population]
+    "Peform a step of a given simulation, returns a map with population, algorithm and configuration"))
 
 (extend-type Simulation
   PopulationProvider
   (addInstance [this]
     (add-instance this))
-  Stepper
-  (step [this]
-    (step (:algorithm this))))
+  Simulator
+  (advance [this]
+    (let [{:keys [new-engine new-algorithm new-population]} (advance (:algorithm this) (:engine this) (:population this))]
+      (create-simulation new-engine new-algorithm new-population))))
 
 

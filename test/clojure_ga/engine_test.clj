@@ -1,7 +1,7 @@
 (ns clojure-ga.engine-test
   (:require [clojure.test :refer :all]
             [clojure-ga.engine :as engine])
-  (:import [clojure_ga.engine PopulationProvider Stepper]))
+  (:import [clojure_ga.engine PopulationProvider Simulator Algorithm]))
 
 (def reasonable-default-arguments [:p-cross 0.75
                                    :p-mutation 0.01
@@ -89,12 +89,17 @@
 
 (deftest algorithm-step
   (testing "performing a simulation step returns a new simulation instance"
-    (let [algorithm (reify Stepper (step [this] {:engine :something}))
+    (let [algorithm (reify Algorithm (advance [this engine population] {:engine :something}))
           simulation (engine/create-simulation :an-engine algorithm)
-          new-simulation (engine/step simulation)]
+          new-simulation (engine/advance simulation)]
       (is (not (identical? simulation new-simulation)))
       (is (:engine new-simulation))))
   (testing "performing a simulation step is delegated to an external algorithm"
-    (let [algorithm (reify Stepper
-                      (step [this] {:engine :something}))]
-      (is (= {:engine :something} (engine/step (engine/create-simulation :an-engine algorithm)))))))
+    (let [algorithm (reify Simulator
+                      (advance [this] {:engine :something}))]
+      (is (= {:engine :something} (engine/advance (engine/create-simulation :an-engine algorithm)))))))
+
+
+(comment (deftest end-to-end-scenario
+   (testing "I can configure a genetic algorithm simulation with stock parameters"
+     (engine/create-vector-based-simulation ))))
