@@ -4,7 +4,7 @@
 (def default-m-cross 0.001)
 
 ;;; TODO/FIXME rename to Config
-(defrecord Engine [p-cross
+(defrecord Config [p-cross
                    p-mutation
                    op-cross
                    op-mutation
@@ -17,47 +17,47 @@
 (defn- p-out-of-range? [p]
   (or (< p 0) (> p 1)))
 
-(defn- validate-arguments [engine]
+(defn- validate-arguments [config]
   (cond
-    (nil? (:random-generator engine)) (throw (IllegalArgumentException. "missing random generator"))
-    (nil? (:p-cross engine)) (throw (IllegalArgumentException. "missing cross probability"))
-    (p-out-of-range? (:p-cross engine)) (throw (IllegalArgumentException. "cross probability out of range"))
-    (nil? (:p-mutation engine)) (throw (IllegalArgumentException. "missing mutation probability"))
-    (p-out-of-range? (:p-mutation engine)) (throw (IllegalArgumentException. "mutation probability out of range"))
-    (nil? (:op-mutation engine)) (throw (IllegalArgumentException. "missing mutation function"))
-    (nil? (:op-cross engine)) (throw (IllegalArgumentException. "missing crossing function"))
-    (nil? (:op-generation engine)) (throw (IllegalArgumentException. "missing generator function"))
-    (nil? (:op-fitness engine)) (throw (IllegalArgumentException. "missing fitness function"))
-    :default engine))
+    (nil? (:random-generator config)) (throw (IllegalArgumentException. "missing random generator"))
+    (nil? (:p-cross config)) (throw (IllegalArgumentException. "missing cross probability"))
+    (p-out-of-range? (:p-cross config)) (throw (IllegalArgumentException. "cross probability out of range"))
+    (nil? (:p-mutation config)) (throw (IllegalArgumentException. "missing mutation probability"))
+    (p-out-of-range? (:p-mutation config)) (throw (IllegalArgumentException. "mutation probability out of range"))
+    (nil? (:op-mutation config)) (throw (IllegalArgumentException. "missing mutation function"))
+    (nil? (:op-cross config)) (throw (IllegalArgumentException. "missing crossing function"))
+    (nil? (:op-generation config)) (throw (IllegalArgumentException. "missing generator function"))
+    (nil? (:op-fitness config)) (throw (IllegalArgumentException. "missing fitness function"))
+    :default config))
 
-(extend-type Engine
+(extend-type Config
   ConfigValidator
   (validate [this] (validate-arguments this)))
 
-(defn create-engine [ & parameters]
+(defn create-config [ & parameters]
   (validate
-   (map->Engine (merge {:random-generator rand
+   (map->Config (merge {:random-generator rand
                         :p-cross default-p-cross
                         :p-mutation default-m-cross}
                        (apply hash-map parameters)))))
 
-(defn add-first-generation-solutions [engine sequence]
-  (assoc engine :first-generation sequence))
+(defn add-first-generation-solutions [config sequence]
+  (assoc config :first-generation sequence))
 
-(defrecord Simulation [engine algorithm population])
+(defrecord Simulation [config algorithm population])
 
 (defn create-simulation
   "Create a new Simulation instance"
-  ([engine algorithm]
-   (create-simulation engine algorithm []))
-  ([engine algorithm population]
-   (->Simulation engine algorithm population)))
+  ([config algorithm]
+   (create-simulation config algorithm []))
+  ([config algorithm population]
+   (->Simulation config algorithm population)))
 
 (defprotocol PopulationProvider
   (addInstance [this] "add a new instance to the population"))
 
 (defn- create-instance [simulation]
-  ((:op-generation (:engine simulation))))
+  ((:op-generation (:config simulation))))
 
 (defn- add-instance [simulation]
   (update simulation
@@ -68,8 +68,8 @@
 
 (defprotocol Algorithm
 ;;; TODO/FIXME use the associative abstraction!
-  (advance [algorithm config population]
-    "Peform a step of a given simulation, returns a map with population, algorithm and configuration"))
+  (advance [this simulation]
+    "Peform a step on :algorithm :config :population and returns a new map"))
 
 (extend-type Simulation
   PopulationProvider
@@ -77,7 +77,6 @@
     (add-instance this))
   Simulator
   (step [this]
-    (let [{:keys [engine algorithm population]} (advance (:algorithm this) (:engine this) (:population this))]
-      (create-simulation engine algorithm population))))
+    (->Simulation (advance (:algorithm this) this))))
 
 
