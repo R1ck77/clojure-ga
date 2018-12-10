@@ -17,9 +17,10 @@
   (testing "The algorithm decides when to stop"
     (is (not (nil? (classic/terminate? (classic/->ClassicGeneticAlgorithm nil nil)))))))
 
+(defn- create-mock-config []
+  (engine/->Config MOCK THE METHODS HERE, PUT A CHECK))
+
 (deftest classic-algorithm-behavior
   (testing "The classic GA does nothing if it's supposed to terminate immediately"
-    (let [algorithm (classic/->ClassicGeneticAlgorithm nil nil)]
-      (engine/advance algorithm {:algorithm algorithm
-                                 :population []
-                                 :config nil}))))
+    (create-genetic-algorithm (create-mock-config) nil 0)
+    (verify no cross or mutation or fitness operator called)))
