@@ -1,9 +1,9 @@
 (ns clojure-ga.classic-test
   (:require [clojure.test :refer :all]
             [clojure-ga.classic :as classic]
-            [clojure-ga.engine :as engine]
+            [clojure-ga.config :as config]
             [clojure-ga.algorithm :as algorithm])
-  (:import [clojure_ga.engine PopulationProvider Simulator]
+  (:import [clojure_ga.config PopulationProvider Simulator]
            [clojure_ga.classic ClassicGeneticAlgorithm]))
 
 (deftest classic-algorithm-selection
@@ -25,7 +25,7 @@
     (swap! counter inc)))
 
 (defn- create-mock-config [counter]
-  (engine/create-config :op-generation (counter-function counter)
+  (config/create-config :op-generation (counter-function counter)
                         :op-fitness (counter-function counter)
                         :op-cross (counter-function counter)
                         :op-mutation (counter-function counter)))

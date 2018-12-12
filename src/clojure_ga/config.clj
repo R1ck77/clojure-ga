@@ -1,4 +1,4 @@
-(ns clojure-ga.engine
+(ns clojure-ga.config
   (:require [clojure-ga.classic :as classic]
             [clojure-ga.algorithm :as algorithm]))
 
@@ -74,6 +74,6 @@
     (add-instance this))
   Simulator
   (step [this]
-    (->Simulation (algorithm/advance (:algorithm this) this))))
+    (map->Simulation (algorithm/advance (:algorithm this) this))))
 
 

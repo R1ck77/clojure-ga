@@ -1,6 +1,5 @@
 (ns clojure-ga.classic
-  (:require [clojure-ga.engine :as engine]
-            [clojure-ga.algorithm :as algorithm]))
+  (:require [clojure-ga.algorithm :as algorithm]))
 
 (defrecord ClassicGeneticAlgorithm [end-condition])
 
