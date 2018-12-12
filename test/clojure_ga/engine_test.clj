@@ -1,7 +1,8 @@
 (ns clojure-ga.engine-test
   (:require [clojure.test :refer :all]
             [clojure-ga.engine :as engine])
-  (:import [clojure_ga.engine PopulationProvider Simulator Algorithm]))
+  (:import [clojure_ga.engine PopulationProvider Simulator]
+           [clojure_ga.algorithm Algorithm]))
 
 (def reasonable-default-arguments [:p-cross 0.75
                                    :p-mutation 0.01

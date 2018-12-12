@@ -1,8 +1,8 @@
 (ns clojure-ga.classic
-  (:require [clojure-ga.engine :as engine])
-  (:import [clojure-ga.engine]))
+  (:require [clojure-ga.engine :as engine]
+            [clojure-ga.algorithm :as algorithm]))
 
-(defrecord ClassicGeneticAlgorithm [config population end-condition])
+(defrecord ClassicGeneticAlgorithm [end-condition])
 
 (defprotocol GeneticAlgorithm
   (select [this])
@@ -14,16 +14,14 @@
   (select [this] true)
   (breed [this] true)
   (terminate? [this] false)
-  engine/Algorithm
+  algorithm/Algorithm
   (advance [this simulation] false))
 
 (defn create-genetic-algorithm
-  ([config population generations]
-   (create-genetic-algorithm config population generations 0))
-  ([config population generations current-generation]
-   (->ClassicGeneticAlgorithm config
-                              population
-                              (fn [] (< current-generation generations)))))
+  ([generations]
+   (create-genetic-algorithm generations 0))
+  ([generations current-generation]
+   (->ClassicGeneticAlgorithm (fn [] (< current-generation generations)))))
 
 
 

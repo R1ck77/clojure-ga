@@ -1,4 +1,6 @@
-(ns clojure-ga.engine)
+(ns clojure-ga.engine
+  (:require [clojure-ga.classic :as classic]
+            [clojure-ga.algorithm :as algorithm]))
 
 (def default-p-cross 0.2)
 (def default-m-cross 0.001)
@@ -66,17 +68,12 @@
 (defprotocol Simulator
   (step [this] "execute a simulation step. Returns a new simulation"))
 
-(defprotocol Algorithm
-;;; TODO/FIXME use the associative abstraction!
-  (advance [this simulation]
-    "Peform a step on :algorithm :config :population and returns a new map"))
-
 (extend-type Simulation
   PopulationProvider
   (addInstance [this]
     (add-instance this))
   Simulator
   (step [this]
-    (->Simulation (advance (:algorithm this) this))))
+    (->Simulation (algorithm/advance (:algorithm this) this))))
 
 
