@@ -1,6 +1,7 @@
 (ns clojure-ga.config
   (:require [clojure-ga.classic :as classic]
-            [clojure-ga.algorithm :as algorithm]))
+            [clojure-ga.algorithm :as algorithm]
+            [clojure-ga.simulator :as simulator]))
 
 (def default-p-cross 0.2)
 (def default-m-cross 0.001)
@@ -65,14 +66,11 @@
   (update simulation
           :population  #(conj % (create-instance simulation))))
 
-(defprotocol Simulator
-  (step [this] "execute a simulation step. Returns a new simulation"))
-
 (extend-type Simulation
   PopulationProvider
   (addInstance [this]
     (add-instance this))
-  Simulator
+  simulator/Simulator
   (step [this]
     (map->Simulation (algorithm/advance (:algorithm this) this))))
 

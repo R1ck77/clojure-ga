@@ -1,7 +1,8 @@
 (ns clojure-ga.config-test
   (:require [clojure.test :refer :all]
-            [clojure-ga.config :as config])
-  (:import [clojure_ga.config PopulationProvider Simulator]
+            [clojure-ga.config :as config]
+            [clojure-ga.simulator :as simulator])
+  (:import [clojure_ga.config PopulationProvider]
            [clojure_ga.algorithm Algorithm]))
 
 (def reasonable-default-arguments [:p-cross 0.75
@@ -98,7 +99,7 @@
                       (advance [this simulation]
                         simulation))
           simulation (config/create-simulation :a-config algorithm)
-          new-simulation (config/step simulation)]
+          new-simulation (simulator/step simulation)]
       (is (not (identical? simulation new-simulation)))
       (is (= :a-config (:config new-simulation)))))
   (testing "performing a simulation step is delegated to an external algorithm"
@@ -106,7 +107,7 @@
                       (advance [this simulation]
                         simulation))]
       (is (= {:config :a-config :population [] :algorithm algorithm}
-             (into {} (config/step (config/create-simulation :a-config algorithm))))))))
+             (into {} (simulator/step (config/create-simulation :a-config algorithm))))))))
 
 
 (comment (deftest end-to-end-scenario

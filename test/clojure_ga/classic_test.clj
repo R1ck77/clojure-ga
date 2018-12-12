@@ -2,8 +2,9 @@
   (:require [clojure.test :refer :all]
             [clojure-ga.classic :as classic]
             [clojure-ga.config :as config]
-            [clojure-ga.algorithm :as algorithm])
-  (:import [clojure_ga.config PopulationProvider Simulator]
+            [clojure-ga.algorithm :as algorithm]
+            [clojure-ga.simulator :as simulator])
+  (:import [clojure_ga.config PopulationProvider]
            [clojure_ga.classic ClassicGeneticAlgorithm]))
 
 (deftest classic-algorithm-selection
