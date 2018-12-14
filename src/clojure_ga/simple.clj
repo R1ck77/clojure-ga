@@ -1,14 +1,14 @@
-(ns clojure-ga.classic
+(ns clojure-ga.simple
   (:require [clojure-ga.algorithm :as algorithm]))
 
-(defrecord ClassicGeneticAlgorithm [end-condition])
+(defrecord SimpleGeneticAlgorithm [end-condition])
 
 (defprotocol GeneticAlgorithm
   (select [this])
   (breed [this])
   (terminate? [this]))
 
-(extend-type ClassicGeneticAlgorithm
+(extend-type SimpleGeneticAlgorithm
   GeneticAlgorithm
   (select [this] true)
   (breed [this] true)
@@ -20,7 +20,7 @@
   ([generations]
    (create-genetic-algorithm generations 0))
   ([generations current-generation]
-   (->ClassicGeneticAlgorithm (fn [] (< current-generation generations)))))
+   (->SimpleGeneticAlgorithm (fn [] (< current-generation generations)))))
 
 
 

@@ -1,23 +1,23 @@
-(ns clojure-ga.classic-test
+(ns clojure-ga.simple-test
   (:require [clojure.test :refer :all]
-            [clojure-ga.classic :as classic]
+            [clojure-ga.simple :as simple]
             [clojure-ga.config :as config]
             [clojure-ga.algorithm :as algorithm]
             [clojure-ga.simulator :as simulator])
   (:import [clojure_ga.config PopulationProvider]
-           [clojure_ga.classic ClassicGeneticAlgorithm]))
+           [clojure_ga.simple SimpleGeneticAlgorithm]))
 
-(deftest classic-algorithm-selection
+(deftest simple-algorithm-selection
   (testing "The algorithm has a selection phase"
-    (is (not (nil? (classic/select (classic/->ClassicGeneticAlgorithm nil)))))))
+    (is (not (nil? (simple/select (simple/->SimpleGeneticAlgorithm nil)))))))
 
-(deftest classic-algorithm-breed
+(deftest simple-algorithm-breed
   (testing "The algorithm has a breed phase"
-    (is (not (nil? (classic/breed (classic/->ClassicGeneticAlgorithm nil)))))))
+    (is (not (nil? (simple/breed (simple/->SimpleGeneticAlgorithm nil)))))))
 
-(deftest classic-algorithm-terminate?
+(deftest simple-algorithm-terminate?
   (testing "The algorithm decides when to stop"
-    (is (not (nil? (classic/terminate? (classic/->ClassicGeneticAlgorithm nil)))))))
+    (is (not (nil? (simple/terminate? (simple/->SimpleGeneticAlgorithm nil)))))))
 
 (defn- counter-function
   "Returns a function that just increases the counter"
@@ -31,12 +31,12 @@
                         :op-cross (counter-function counter)
                         :op-mutation (counter-function counter)))
 
-(deftest classic-algorithm-behavior
-  (testing "The classic GA does nothing if it's supposed to terminate immediately"
+(deftest simple-algorithm-behavior
+  (testing "The simple GA does nothing if it's supposed to terminate immediately"
     (let [counter (atom 0)
           simulation-parameters {:population [:a :b :c]
                                  :config  (create-mock-config counter)}
-          algorithm (classic/create-genetic-algorithm 0)]
+          algorithm (simple/create-genetic-algorithm 0)]
       (algorithm/advance algorithm simulation-parameters)
       (algorithm/advance algorithm simulation-parameters)
       (algorithm/advance algorithm simulation-parameters)
