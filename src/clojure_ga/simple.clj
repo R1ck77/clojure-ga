@@ -4,23 +4,21 @@
 (defrecord SimpleGeneticAlgorithm [end-condition])
 
 (defprotocol GeneticAlgorithm
-  (select [this])
-  (breed [this])
-  (terminate? [this]))
+  (breed [this population]))
 
 (extend-type SimpleGeneticAlgorithm
   GeneticAlgorithm
-  (select [this] true)
-  (breed [this] true)
-  (terminate? [this] false)
+  (breed [this population] true)
   algorithm/Algorithm
-  (advance [this simulation] false))
+  (advance [this simulation]
+    (while ((:end-condition this))
+      (breed this nil))))
 
 (defn create-genetic-algorithm
   ([generations]
-   (create-genetic-algorithm generations 0))
+   (create-genetic-algorithm generations (atom 0)))
   ([generations current-generation]
-   (->SimpleGeneticAlgorithm (fn [] (< current-generation generations)))))
+   (->SimpleGeneticAlgorithm (fn [] (< @current-generation generations)))))
 
 
 

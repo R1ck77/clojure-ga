@@ -7,17 +7,9 @@
   (:import [clojure_ga.config PopulationProvider]
            [clojure_ga.simple SimpleGeneticAlgorithm]))
 
-(deftest simple-algorithm-selection
-  (testing "The algorithm has a selection phase"
-    (is (not (nil? (simple/select (simple/->SimpleGeneticAlgorithm nil)))))))
-
 (deftest simple-algorithm-breed
   (testing "The algorithm has a breed phase"
-    (is (not (nil? (simple/breed (simple/->SimpleGeneticAlgorithm nil)))))))
-
-(deftest simple-algorithm-terminate?
-  (testing "The algorithm decides when to stop"
-    (is (not (nil? (simple/terminate? (simple/->SimpleGeneticAlgorithm nil)))))))
+    (is (not (nil? (simple/breed (simple/->SimpleGeneticAlgorithm nil) nil))))))
 
 (defn- counter-function
   "Returns a function that just increases the counter"
@@ -38,7 +30,11 @@
                                  :config  (create-mock-config counter)}
           algorithm (simple/create-genetic-algorithm 0)]
 
-      (algorithm/advance algorithm
-                         (algorithm/advance algorithm
-                                            (algorithm/advance algorithm simulation-parameters)))
-      (is (zero? @counter)))))
+      (algorithm/advance algorithm simulation-parameters)
+      (is (zero? @counter))))
+  (testing "advance executes breed for the right number of generations"
+    (let [steps (atom [])]
+      (with-redefs [simple/breed (fn [_ _] (swap! steps #(conj % :breed)))]
+        (let [algorithm (simple/create-genetic-algorithm 3)]
+          (algorithm/advance algorithm nil)
+          (is (= [:breed :mutate :breed :mutate :breed :mutate] steps)))))))
