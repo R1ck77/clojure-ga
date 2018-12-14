@@ -37,7 +37,8 @@
           simulation-parameters {:population [:a :b :c]
                                  :config  (create-mock-config counter)}
           algorithm (simple/create-genetic-algorithm 0)]
-      (algorithm/advance algorithm simulation-parameters)
-      (algorithm/advance algorithm simulation-parameters)
-      (algorithm/advance algorithm simulation-parameters)
+
+      (algorithm/advance algorithm
+                         (algorithm/advance algorithm
+                                            (algorithm/advance algorithm simulation-parameters)))
       (is (zero? @counter)))))
