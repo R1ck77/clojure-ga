@@ -1,5 +1,5 @@
 (ns clojure-ga.fitness-proportionate-selection-test
-  (require [clojure.test :refer :all]
+  (:require [clojure.test :refer :all]
            [clojure-ga.fitness-proportionate-selection :as selection]))
 
 (defn- create-iterator

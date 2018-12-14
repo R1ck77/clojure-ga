@@ -1,5 +1,5 @@
 (ns clojure-ga.config
-  (:require [clojure-ga.classic :as classic]
+  (:require [clojure-ga.simple :as simple]
             [clojure-ga.algorithm :as algorithm]
             [clojure-ga.simulator :as simulator]))
 
