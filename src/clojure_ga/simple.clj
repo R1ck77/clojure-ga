@@ -21,4 +21,3 @@
    (->SimpleGeneticAlgorithm (fn [] (< @current-generation generations)))))
 
 
-

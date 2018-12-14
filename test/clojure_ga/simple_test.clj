@@ -31,10 +31,4 @@
           algorithm (simple/create-genetic-algorithm 0)]
 
       (algorithm/advance algorithm simulation-parameters)
-      (is (zero? @counter))))
-  (testing "advance executes breed for the right number of generations"
-    (let [steps (atom [])]
-      (with-redefs [simple/breed (fn [_ _] (swap! steps #(conj % :breed)))]
-        (let [algorithm (simple/create-genetic-algorithm 3)]
-          (algorithm/advance algorithm nil)
-          (is (= [:breed :mutate :breed :mutate :breed :mutate] steps)))))))
+      (is (zero? @counter)))))
