@@ -71,3 +71,17 @@
       (is (= [:chromosome1 :chromosome2]
              (crossover-on-two-elements counter 0 1))))))
 
+(deftest crossover-multiple-values
+  (testing "general case: various probabilities and multiple chromosomes"
+    (is (= [11 -8 3 4 5 6 17 -2]
+           (crossover/crossover [1 2 3 4 5 6 7 8]
+                                {:random-f (utils/create-iterator [0.2 0.8 0.8 0.1])
+                                 :p-cross 0.5
+                                 :cross-f (fn [a b] (vector (+ a 10) (- b 10)))}))))
+  (testing "general case: various probabilities and multiple chromosomes, odd elements"
+    (is (= [11 -8 3 4 5 6 17 -2]
+           (crossover/crossover [1 2 3 4 5 6 7 8 9]
+                                {:random-f (utils/create-iterator [0.2 0.8 0.8 0.1])
+                                 :p-cross 0.5
+                                 :cross-f (fn [a b] (vector (+ a 10) (- b 10)))})))))
+
