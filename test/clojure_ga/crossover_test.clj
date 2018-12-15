@@ -29,13 +29,17 @@
                                  :cross-f (fn [_ _] (is false "operator invoked but not expected"))})))))
 
 (defn- crossover-on-two-elements [counter p-cross expected-random-value]
-  (crossover/crossover [:chromosome1 :chromosome2]
-                       {:random-f #(identity expected-random-value)
-                        :p-cross p-cross
-                        :cross-f (fn [a b]
-                                   (swap! counter inc)
-                                   (is (and (= :chromosome1 a)
-                                            (= :chromosome2 b))))}))
+  (let [conversion {:chromosome1 :result1
+                    :chromosome2 :result2}]
+    (crossover/crossover [:chromosome1 :chromosome2]
+                         {:random-f #(identity expected-random-value)
+                          :p-cross p-cross
+                          :cross-f (fn [a b]
+                                     (swap! counter inc)
+                                     (is (and (= :chromosome1 a)
+                                              (= :chromosome2 b)))
+                                     (vector (get conversion a)
+                                             (get conversion b)))})))
 (deftest crossover-one-pair
   (testing "in a two chromosomes population with p cross 1, crossover applies the operator once on the chromosomes"
     (let [counter (atom 0)]
@@ -57,4 +61,11 @@
 
       (crossover-on-two-elements counter 0 0)
       (is (= 1 @counter) "Crossover operator not executed the expected number of times")
-      (reset! counter 0))))
+      (reset! counter 0)))
+  (testing "for two chromosomes returns the output of the crossover function when the crossover is applied"
+    (let [counter (atom 0)]
+      (is (= [:result1 :result2] (crossover-on-two-elements counter 1 1)))))
+  (testing "for two chromosomes returns the original pair when the crossover is not applied"
+    (let [counter (atom 0)]
+      (is (= [:chromosome1 :chromosome2] (crossover-on-two-elements counter 0 1))))))
+
