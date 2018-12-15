@@ -3,25 +3,25 @@
             [clojure-ga.utils :as utils]
             [clojure-ga.crossover :as crossover]))
 
-(deftest crossover-not-enough-elements
-  (testing "crossover doesn't invoke the cross operator on an empty population"
+(deftest not-enough-elements
+  (testing "doesn't invoke the cross operator on an empty population"
     (crossover/crossover []
                          {:random-f #(throw (IllegalStateException. "Unexpected execution of the random generator"))
                           :p-cross 1
                           :cross-f (fn [_ _] (is false "operator invoked but not expected"))})
     (is true))
-  (testing "crossover returns an empty vector on an empty population"
+  (testing "returns an empty vector on an empty population"
     (is (= []
            (crossover/crossover []
                                 {:random-f #(throw (IllegalStateException. "Unexpected execution of the random generator"))
                                  :p-cross 1
                                  :cross-f (fn [_ _] (is false "operator invoked but not expected"))}))))  
-  (testing "crossover doesn't invoke the cross operator on a population of one element"
+  (testing "doesn't invoke the cross operator on a population of one element"
     (crossover/crossover [:chromosome]
                          {:random-f #(throw (IllegalStateException. "Unexpected execution of the random generator"))
                           :p-cross 1
                           :cross-f (fn [_ _] (is false "operator invoked but not expected"))}))
-  (testing "crossover returns an empty vector on a population of one element"
+  (testing "returns an empty vector on a population of one element"
     (is (= []
            (crossover/crossover [:chromosome]
                                 {:random-f #(throw (IllegalStateException. "Unexpected execution of the random generator"))
@@ -40,7 +40,7 @@
                                               (= :chromosome2 b)))
                                      (vector (get conversion a)
                                              (get conversion b)))})))
-(deftest crossover-one-pair
+(deftest one-pair
   (testing "in a two chromosomes population with p cross 1, crossover applies the operator once on the chromosomes"
     (let [counter (atom 0)]
       (crossover-on-two-elements counter 1 0.5)
@@ -71,7 +71,7 @@
       (is (= [:chromosome1 :chromosome2]
              (crossover-on-two-elements counter 0 1))))))
 
-(deftest crossover-multiple-values
+(deftest multiple-values
   (testing "general case: various probabilities and multiple chromosomes"
     (is (= [11 -8 3 4 5 6 17 -2]
            (crossover/crossover [1 2 3 4 5 6 7 8]
