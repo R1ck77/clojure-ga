@@ -64,8 +64,10 @@
       (reset! counter 0)))
   (testing "for two chromosomes returns the output of the crossover function when the crossover is applied"
     (let [counter (atom 0)]
-      (is (= [:result1 :result2] (crossover-on-two-elements counter 1 1)))))
+      (is (= [:result1 :result2]
+             (crossover-on-two-elements counter 1 1)))))
   (testing "for two chromosomes returns the original pair when the crossover is not applied"
     (let [counter (atom 0)]
-      (is (= [:chromosome1 :chromosome2] (crossover-on-two-elements counter 0 1))))))
+      (is (= [:chromosome1 :chromosome2]
+             (crossover-on-two-elements counter 0 1))))))
 
