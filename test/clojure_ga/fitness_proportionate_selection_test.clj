@@ -1,22 +1,14 @@
 (ns clojure-ga.fitness-proportionate-selection-test
   (:require [clojure.test :refer :all]
+            [clojure-ga.utils :as utils]
            [clojure-ga.fitness-proportionate-selection :as selection]))
-
-(defn- create-iterator
-  "Returns a function that iterates over the elements and then returns identically nil"
-  [elements]
-  (let [remaining (atom elements)]
-    (fn []
-      (let [next (first @remaining)]
-        (swap! remaining rest)
-        next))))
 
 (defn- selection-to-random [total-elements index]
   (double
    (/ index total-elements)))
 
 (defn- create-fake-random [n-elements selections]
-  (create-iterator (map #(selection-to-random n-elements %) selections)))
+  (utils/create-iterator (map #(selection-to-random n-elements %) selections)))
 
 (defn- score-keyword [keyword]
   (get {:a 1, :b 2, :c 3, :d 4, :e 5} keyword))
