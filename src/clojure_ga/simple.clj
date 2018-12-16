@@ -6,13 +6,11 @@
 (defprotocol Evolver
   (evolve [this population] "evolve a single step of a population"))
 
-(defrecord SimpleGA [fitness-f crossover mutation])
+(defrecord SimpleGA [selector crossover mutation])
 
 (extend-type SimpleGA
   Evolver
   (evolve [this population]
     (mutation/mutate (get this :mutation)
-                     (selection/select (count population)
-                                       population
-                                       (get this :fitness-f)
-                                       rand))))
+                     (crossover/combine (get this :crossover)
+                                        (selection/select (get this :selector) population)))))
