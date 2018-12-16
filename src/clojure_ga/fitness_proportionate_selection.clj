@@ -38,7 +38,7 @@
         total-weight (get-total-weight weighted-population)]
     (pick-element-from-weighted-population weighted-population (* total-weight random-value))))
 
-(defn select
+(defn select-chromosomes
   "Select n non distinct elements with the Roulette Method
 
 Use the score function with the element itself to get its fitness and the random generator for the selection"
@@ -46,3 +46,15 @@ Use the score function with the element itself to get its fitness and the random
   (if (empty? population)
     []
     (take n (repeatedly #(pick-element population score-function (random-generator))))))
+
+(defprotocol Selector
+  (select [this population]))
+
+(defrecord FitnessSelector [fitness-f random-f])
+
+(extend-type FitnessSelector
+  Selector
+  (select [this population]
+    (let [fitness-f (get this :fitness-f)
+          random-f (get this :random-f)]
+     (select-chromosomes (count population) population fitness-f random-f))))
