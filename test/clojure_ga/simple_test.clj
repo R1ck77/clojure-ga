@@ -1,14 +1,22 @@
 (ns clojure-ga.simple-test
   (:require [clojure.test :refer :all]
             [clojure-ga.simple :as simple]
-            [clojure-ga.config :as config]))
+            [clojure-ga.config :as config]
+            [clojure-ga.crossover :as crossover]
+            [clojure-ga.mutation :as mutation]))
 
 
 (defn- throwing-function [& args]
-  (is false "unexpected execution"))
+)
 
 (defn- create-throwing-instance []
-  (simple/->SimpleGA throwing-function throwing-function throwing-function))
+  (simple/->SimpleGA throwing-function
+                     (reify crossover/Crossover
+                       (combine [this population]
+                         (is false "unexpected execution")))
+                     (reify mutation/Mutation
+                       (mutate [this population]
+                         (is false "unexpected execution")))))
 
 
 (deftest empty-population
