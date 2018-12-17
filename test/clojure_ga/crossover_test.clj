@@ -45,5 +45,24 @@
   (testing "general case: multiple chromosomes"
     (let [crossover (crossover/->SimpleCrossover (fn [a b] (vector (+ a 10) (- b 10))))]
       (is (= [11 -8 13 -6 15 -4 17 -2]
-                   (crossover/combine crossover [1 2 3 4 5 6 7 8]))))))
+             (crossover/combine crossover [1 2 3 4 5 6 7 8]))))))
 
+(defn test-crossover-output-for-p-and-random-values [probability random-value]
+  (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 1))]
+      (is (= [":a" ":b"] (crossover/combine crossing [:a :b])))))
+
+(deftest probability-based-crossover
+  (testing "applies the function on every pair for P=1, no matter the outcome of the random-f"
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0))]
+      (is (= [":a" ":b"] (crossover/combine crossing [:a :b]))))
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0.5))]
+      (is (= [":a" ":b"] (crossover/combine crossing [:a :b]))))
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0.9999))]
+      (is (= [":a" ":b"] (crossover/combine crossing [:a :b])))))
+    (testing "never applies the function for P=0, no matter the outcome of the random-f"
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 0))]
+      (is (= [:a :b] (crossover/combine crossing [:a :b]))))
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 0.5))]
+      (is (= [:a :b] (crossover/combine crossing [:a :b]))))
+    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 1))]
+      (is (= [:a :b] (crossover/combine crossing [:a :b]))))))
