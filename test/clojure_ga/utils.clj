@@ -4,7 +4,7 @@
   "Returns a function that iterates over the elements and then returns identically nil"
   [elements]
   (let [remaining (atom elements)]
-    (fn []
+    (fn [& _]
       (let [next (first @remaining)]
         (swap! remaining rest)
         next))))
