@@ -49,20 +49,31 @@
 
 (defn test-crossover-output-for-p-and-random-values [probability random-value]
   (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 1))]
-      (is (= [":a" ":b"] (crossover/combine crossing [:a :b])))))
+    (is (= [":a" ":b"] (crossover/combine crossing [:a :b])))))
+
+(defn- dumb-crossover-operator [a b]
+  (vector (str a) (str b)))
+
+(defn- create-dumb-crossover [probability random-f]
+  (crossover/create-classic-crossover dumb-crossover-operator probability random-f))
 
 (deftest probability-based-crossover
   (testing "applies the function on every pair for P=1, no matter the outcome of the random-f"
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0))]
+    (let [crossing (create-dumb-crossover 1 #(identity 0))]
       (is (= [":a" ":b"] (crossover/combine crossing [:a :b]))))
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0.5))]
+    (let [crossing (create-dumb-crossover 1 #(identity 0.5))]
       (is (= [":a" ":b"] (crossover/combine crossing [:a :b]))))
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 1 #(identity 0.9999))]
+    (let [crossing (create-dumb-crossover 1 #(identity 0.9999))]
       (is (= [":a" ":b"] (crossover/combine crossing [:a :b])))))
     (testing "never applies the function for P=0, no matter the outcome of the random-f"
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 0))]
+    (let [crossing (create-dumb-crossover 0 #(identity 0))]
       (is (= [:a :b] (crossover/combine crossing [:a :b]))))
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 0.5))]
+    (let [crossing (create-dumb-crossover 0 #(identity 0.5))]
       (is (= [:a :b] (crossover/combine crossing [:a :b]))))
-    (let [crossing (crossover/create-classic-crossover #(vector (str %) (str %2)) 0 #(identity 1))]
-      (is (= [:a :b] (crossover/combine crossing [:a :b]))))))
+    (let [crossing (create-dumb-crossover 0 #(identity 1))]
+      (is (= [:a :b] (crossover/combine crossing [:a :b])))))
+  (testing "general case"
+    (let [random-f (utils/create-iterator [0.1 0.8 0.3 0.2 0.9])
+          crossing (create-dumb-crossover 0.3 random-f)]
+      (is (= [":a" ":b" :c :d :e :f ":g" ":h" :i :l]
+             (crossover/combine crossing [:a :b :c :d :e :f :g :h :i :l]))))))
