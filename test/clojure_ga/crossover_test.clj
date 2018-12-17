@@ -77,3 +77,17 @@
           crossing (create-dumb-crossover 0.3 random-f)]
       (is (= [":a" ":b" :c :d :e :f ":g" ":h" :i :l]
              (crossover/combine crossing [:a :b :c :d :e :f :g :h :i :l]))))))
+
+(deftest single-point-vector-crossover-test
+  (testing "returns the two instances unchanged if both empty vectors"
+    (let [vector-crossover (crossover/create-1p-vector-crossover 1.0
+                                                                 rand-int
+                                                                 #(identity 0))]
+      (is (= [[] []]
+             (crossover/combine vector-crossover [[] []])))))
+  (testing "with one empty chromosome and one that isn't, split the genome"
+    (let [vector-crossover (crossover/create-1p-vector-crossover 1.0
+                                                                 (utils/create-iterator [0 2])
+                                                                 #(identity 0))]
+      (is (= [[:a :b] [:c :d :e]]
+             (crossover/combine vector-crossover [[] [:a :b :c :d :e]]))))))
