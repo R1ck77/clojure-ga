@@ -21,11 +21,12 @@
     (->SimpleCrossover crossover-f)))
 
 (defn create-1p-vector-crossover [probability random-int-f random-f]
-  (let [crossover-f (fn [a b]
-                      (let [point-a (random-int-f (count a))
-                            a-halves (split-at point-a a)
-                            point-b (random-int-f (count b))
-                            b-halves (split-at point-b b)]
-                        (vector (vec (concat (first b-halves) (second a-halves)))
-                                (vec (concat (first a-halves) (second b-halves))))))]
-    (->SimpleCrossover crossover-f)))
+  (create-classic-crossover (fn [a b]
+                       (let [point-a (random-int-f (count a))
+                             a-halves (split-at point-a a)
+                             point-b (random-int-f (count b))
+                             b-halves (split-at point-b b)]
+                         (vector (vec (concat (first b-halves) (second a-halves)))
+                                 (vec (concat (first a-halves) (second b-halves))))))
+                            probability random-f))
+

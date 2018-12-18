@@ -100,4 +100,26 @@
       (is (= [[:a :b :c :d 4 5 6 7]
               [1 2 3 :e]]
              (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
+                                                  [:a :b :c :d :e]])))))
+  (testing "general case, probability 0.5, various random numbe extractions"
+    (let [vector-crossover (crossover/create-1p-vector-crossover 0.5
+                                                                 (utils/create-iterator [3 4])
+                                                                 #(identity 0.2))]
+      (is (= [[:a :b :c :d 4 5 6 7]
+              [1 2 3 :e]]
+             (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
+                                                  [:a :b :c :d :e]]))))
+    (let [vector-crossover (crossover/create-1p-vector-crossover 0.5
+                                                                 (utils/create-iterator [3 4])
+                                                                 #(identity 0.5))]
+      (is (= [[1 2 3 4 5 6 7]
+              [:a :b :c :d :e]]
+             (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
+                                                  [:a :b :c :d :e]]))))
+    (let [vector-crossover (crossover/create-1p-vector-crossover 0.5
+                                                                 (utils/create-iterator [3 4])
+                                                                 #(identity 0.8))]
+      (is (= [[1 2 3 4 5 6 7]
+              [:a :b :c :d :e]]
+             (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
                                                   [:a :b :c :d :e]]))))))
