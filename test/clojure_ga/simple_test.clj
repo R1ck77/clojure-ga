@@ -1,5 +1,6 @@
 (ns clojure-ga.simple-test
   (:require [clojure.test :refer :all]
+            [clojure-ga.utils :as utils]
             [clojure-ga.simple :as simple]
             [clojure-ga.config :as config]
             [clojure-ga.fitness-proportionate-selection :as selection]
@@ -22,3 +23,11 @@
                                            [:mutated-population])))]
       (is (= [:mutated-population]
              (simple/evolve simple-ga [:initial-population]))))))
+
+(deftest evolve-until
+  (testing "evolve-until repeats the evolution while the condition is true "
+    (let [iterator (utils/create-iterator [true true true false])
+          simulation (simple/->SimpleSimulation (simple/->SimpleGA nil nil nil)
+                                                (fn [population]
+                                                  (iterator)))]
+      (is (= [3] (simple/evolve-while simulation [0]))))))

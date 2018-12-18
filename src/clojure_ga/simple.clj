@@ -14,3 +14,17 @@
     (mutation/mutate (get this :mutation)
                      (crossover/combine (get this :crossover)
                                         (selection/select (get this :selector) population)))))
+
+(defprotocol Simulator
+  (evolve-while [this population] "evolve multiple steps for a population"))
+
+(defrecord SimpleSimulation [evolver condition-f])
+
+(extend-type SimpleSimulation
+  Simulator
+  (evolve-while [this population]
+    
+    ))
+
+
+
