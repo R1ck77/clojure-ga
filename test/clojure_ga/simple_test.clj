@@ -27,7 +27,15 @@
 (deftest evolve-until
   (testing "evolve-until repeats the evolution while the condition is true "
     (let [iterator (utils/create-iterator [true true true false])
-          simulation (simple/->SimpleSimulation (simple/->SimpleGA nil nil nil)
+          simulation (simple/->SimpleSimulation (simple/->SimpleGA (reify selection/Selector
+                                                                     (select [this population]
+                                                                       population))
+                                                                   (reify crossover/Crossover
+                                                                     (combine [this population]
+                                                                       population))
+                                                                   (reify mutation/Mutation
+                                                                     (mutate [this population]
+                                                                       (vector (inc (first population))))))
                                                 (fn [population]
                                                   (iterator)))]
       (is (= [3] (simple/evolve-while simulation [0]))))))
