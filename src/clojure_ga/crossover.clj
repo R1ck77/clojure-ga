@@ -35,3 +35,6 @@
                               ['() '()]
                               ) probability random-f))
 
+(defn count-split-points [tree]
+  )
+

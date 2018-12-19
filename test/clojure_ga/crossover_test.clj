@@ -124,7 +124,23 @@
              (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
                                                   [:a :b :c :d :e]]))))))
 
+(defmacro test-certain-tree-crossover [input expected-output]
+  `(let [tree-crossover# (crossover/create-tree-crossover 1.0 #(identity 0.0))]
+    (is (= ~expected-output
+           (crossover/combine tree-crossover# ~input)))))
+
+(deftest count-split-points
+  (testing "split points of a two arguments operation is 2"
+    (is (= 2 (crossover/count-split-points '(+ :a :b)))))
+  (testing "split points of a list with an unary operator is 1"
+    (is (= 1 (crossover/count-split-points '(Math/sqrt 2)))))
+  (testing "split points of a nested list is the recursive sum of each split point"
+    (is (= 7 (crossover/count-split-points '(+ (- 3 4) (* 1 (Math/sqrt 12))))))))
+
+
 (deftest tree-crossover-test
   (testing "when combining empty chromosomes, the result is an empty chromosome"
-    (let [tree-crossover (crossover/create-tree-crossover 1.0 #(identity 0.0))]
-      (= ['() '()] (crossover/combine tree-crossover ['() '()])))))
+    (test-certain-tree-crossover ['() '()] ['() '()]))
+  (testing "when combining lists ..."
+    ;;TBD
+    ))
