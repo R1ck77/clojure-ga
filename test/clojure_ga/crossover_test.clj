@@ -123,3 +123,8 @@
               [:a :b :c :d :e]]
              (crossover/combine vector-crossover [[1 2 3 4 5 6 7]
                                                   [:a :b :c :d :e]]))))))
+
+(deftest tree-crossover-test
+  (testing "when combining empty chromosomes, the result is an empty chromosome"
+    (let [tree-crossover (crossover/create-tree-crossover 1.0 #(identity 0.0))]
+      (= ['() '()] (crossover/combine tree-crossover ['() '()])))))
