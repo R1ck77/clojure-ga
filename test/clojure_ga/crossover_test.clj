@@ -130,12 +130,20 @@
            (crossover/combine tree-crossover# ~input)))))
 
 (deftest count-split-points
+  (testing "split points of a non list returns 1"
+    (is (= 1 (crossover/count-split-points 0)))
+    (is (= 1 (crossover/count-split-points :x))))
   (testing "split points of a list with an unary operator is 2"
     (is (= 2 (crossover/count-split-points '(Math/sqrt 2)))))
   (testing "split points of a two arguments operation is 3"
     (is (= 3 (crossover/count-split-points '(+ :a :b)))))
   (testing "split points of a nested list is the recursive sum of each split point"
     (is (= 8 (crossover/count-split-points '(+ (- 3 4) (* 1 (Math/sqrt 12))))))))
+
+(deftest split-at-point
+  (testing "splitting a form at place 0 returns 0 and the original form"
+    (is (= [0 '(+ 1 2)] (crossover/split-at-point '(+ 1 2))))
+    (is (= [0 42] (crossover/split-at-point 42)))))
 
 
 (deftest tree-crossover-test

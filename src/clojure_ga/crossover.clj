@@ -30,14 +30,19 @@
                                         (vec (concat (first a-halves) (second b-halves))))))
                             probability random-f))
 
+(defn count-split-points [form]
+  (inc
+   (if (seq? form)
+     (apply + (map count-split-points (rest form)))
+     0)))
+
+(defn split-at-point [form]
+  (vector 0 form))
+
+
+
 (defn create-tree-crossover [probability random-f]
   (create-classic-crossover (fn [a b]
                               ['() '()]
                               ) probability random-f))
-
-
-(defn count-split-points [form]
-  (if (seq? form)
-    (inc (apply + (map count-split-points (rest form))))
-    1))
 
