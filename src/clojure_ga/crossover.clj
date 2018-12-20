@@ -36,13 +36,18 @@
      (apply + (map count-split-points (rest form)))
      0)))
 
-(defn split-at-point [form]
-  (vector 0 form))
+;;; I miss an intermediate step: a version of count-split-points that returns pairs!!!
+(defn iterate-split-points [form placeholder]
+  (vector (vector placeholder form))
+  )
 
+(comment
+  (defn split-at-point [form index placeholder]
+    (vector 0 form))
 
-
-(defn create-tree-crossover [probability random-f]
-  (create-classic-crossover (fn [a b]
-                              ['() '()]
-                              ) probability random-f))
+  (defn create-tree-crossover [probability random-f]
+    (create-classic-crossover (fn [a b]
+                                ['() '()])
+                              probability
+                              random-f)))
 

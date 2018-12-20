@@ -140,21 +140,37 @@
   (testing "split points of a nested list is the recursive sum of each split point"
     (is (= 8 (crossover/count-split-points '(+ (- 3 4) (* 1 (Math/sqrt 12))))))))
 
-;;; are those two tests at odds for the order of the results?
-(deftest split-at-point
-  (testing "splitting a form at place 0 returns 0 and the original form"
+
+(deftest interate-split-points-test
+  (testing "iterating over a value "
     (let [unique-symbol (gensym)]
-      (is (= [unique-symbol '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 unique-symbol)))
-      (is (= [unique-symbol 42] (crossover/split-at-point 42 0 unique-symbol)))))
-  (testing "spitting a form at an argument returns the argument and a form with replaced symbol"
+      (is (= [[unique-symbol 42]]
+             (crossover/iterate-split-points 42 unique-symbol))))))
+
+(comment
+  (testing "iterating over a simple list "
     (let [unique-symbol (gensym)]
-      (is (= [(list + unique-symbol 2) 1]
-             (crossover/split-at-point '(+ 1 2) 1 unique-symbol))))))
+      (is (= [[unique-symbol '(+ 1 2)]
+              [(list + unique-symbol 2) 1]
+              [(list + 1 unique-symbol) 2]]
+             (crossover/iterate-split-points '(+ 1 2) unique-symbol))))))
+
+(comment ;;; are those two tests at odds for the order of the results?
+  (deftest split-at-point-test
+   (testing "splitting a form at place 0 returns 0 and the original form"
+     (let [unique-symbol (gensym)]
+       (is (= [unique-symbol '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 unique-symbol)))
+       (is (= [unique-symbol 42] (crossover/split-at-point 42 0 unique-symbol)))))
+   (testing "spitting a form at an argument returns the argument and a form with replaced symbol"
+     (let [unique-symbol (gensym)]
+       (is (= [(list + unique-symbol 2) 1]
+              (crossover/split-at-point '(+ 1 2) 1 unique-symbol)))))))
 
 
-(deftest tree-crossover-test
-  (testing "when combining empty chromosomes, the result is an empty chromosome"
-    (test-certain-tree-crossover ['() '()] ['() '()]))
-  (testing "when combining lists ..."
-    ;;TBD
-    ))
+(comment
+  (deftest tree-crossover-test
+   (testing "when combining empty chromosomes, the result is an empty chromosome"
+     (test-certain-tree-crossover ['() '()] ['() '()]))
+   (testing "when combining lists ..."
+     ;;TBD
+     )))
