@@ -35,6 +35,9 @@
                               ['() '()]
                               ) probability random-f))
 
-(defn count-split-points [tree]
-  )
+
+(defn count-split-points [form]
+  (if (seq? form)
+    (inc (apply + (map count-split-points (rest form))))
+    1))
 
