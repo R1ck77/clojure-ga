@@ -140,10 +140,16 @@
   (testing "split points of a nested list is the recursive sum of each split point"
     (is (= 8 (crossover/count-split-points '(+ (- 3 4) (* 1 (Math/sqrt 12))))))))
 
+;;; are those two tests at odds for the order of the results?
 (deftest split-at-point
   (testing "splitting a form at place 0 returns 0 and the original form"
-    (is (= [0 '(+ 1 2)] (crossover/split-at-point '(+ 1 2))))
-    (is (= [0 42] (crossover/split-at-point 42)))))
+    (let [unique-symbol (gensym)]
+      (is (= [unique-symbol '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 unique-symbol)))
+      (is (= [unique-symbol 42] (crossover/split-at-point 42 0 unique-symbol)))))
+  (testing "spitting a form at an argument returns the argument and a form with replaced symbol"
+    (let [unique-symbol (gensym)]
+      (is (= [(list + unique-symbol 2) 1]
+             (crossover/split-at-point '(+ 1 2) 1 unique-symbol))))))
 
 
 (deftest tree-crossover-test
