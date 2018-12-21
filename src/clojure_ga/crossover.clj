@@ -1,14 +1,14 @@
 (ns clojure-ga.crossover
   (:require [clojure.zip :as zip]))
 
-(defprotocol crossover
+(defprotocol Crossover
   (combine [this population]
     "operate a crossover operator on all pairs in the population" ))
 
 (defrecord SimpleCrossover [crossover-f])
 
 (extend-type SimpleCrossover
-  crossover
+  Crossover
   (combine [this population]
     (doall
      (mapcat #(apply (get this :crossover-f) %)
@@ -19,7 +19,7 @@
                       (if (< (random-f) probability)
                         (crossover-operator a b)
                         (vector a b)))]
-    (->simplecrossover crossover-f)))
+    (->SimpleCrossover crossover-f)))
 
 (defn create-1p-vector-crossover [probability random-int-f random-f]
   (create-classic-crossover (fn [a b]
@@ -30,12 +30,6 @@
                                 (vector (vec (concat (first b-halves) (second a-halves)))
                                         (vec (concat (first a-halves) (second b-halves))))))
                             probability random-f))
-
-(defn count-split-points [form]
-  (inc
-   (if (seq? form)
-     (apply + (map count-split-points (rest form)))
-     0)))
 
 (defn split-at-point [loc placeholder]
   (let [left-loc (zip/edit loc (fn [node] placeholder))]
@@ -54,8 +48,8 @@
        (zip-walk next placeholder new-acc)
        new-acc)))))
 
-
 (defn all-split-points
   [form placeholder]
   (zip-walk (zip/seq-zip form) placeholder []))
+
 
