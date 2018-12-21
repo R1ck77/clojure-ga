@@ -149,12 +149,11 @@
     (is (= [[:x '(+ 1 2)] ['(+ :x 2) 1] ['(+ 1 :x) 2]]
            (crossover/all-split-points '(+ 1 2) :x))))
     (testing "iterate: troubling combination"
-      (is (= [[:x '(+ (+ 1 2) 3)]
-              ['(+ :x 3) '(+ 1 2)]
-              ['(+ (+ :x 2) 3) 1]
-              ['(+ (+ 1 :x) 3) 2]
-              ['(+ (+ 1 2) :x) 3]]
-           (crossover/all-split-points '(+ (+ 1 2) 3) :x))))
+      (is (= [[:x '(+ (+ 1) 3)]
+              ['(+ :x 3) '(+ 1)]
+              ['(+ (+ :x) 3) 1]
+              ['(+ (+ 1) :x) 3]]
+           (crossover/all-split-points '(+ (+ 1) 3) :x))))
   (testing "iterate: general case 2"
     (is (= [[:x '(+ 1 (- 3 (* 1 5)) (Math/sqrt 12))]
             ['(+ :x (- 3 (* 1 5)) (Math/sqrt 12)) 1]
