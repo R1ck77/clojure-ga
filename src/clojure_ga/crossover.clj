@@ -42,16 +42,18 @@
     (vector (zip/root left-loc)
             (zip/node loc))))
 
-;;; i miss an intermediate step: a version of count-split-points that returns pairs!!!
-
 (defn- zip-walk [loc placeholder acc]
-  (if (zip/branch? loc)
-    (zip-walk (-> loc zip/down zip/right) placeholder (conj acc (split-at-point loc placeholder)))
-    (let [new-acc (conj acc (split-at-point loc placeholder))
-          next (zip/right loc)]
-      (if next
-        (zip-walk next placeholder new-acc)
-        new-acc))))
+(let [next (zip/right loc)]
+ (if (zip/branch? loc)
+   (concat (zip-walk (-> loc zip/down zip/right) placeholder (conj acc (split-at-point loc placeholder)))
+           (if next
+             (zip-walk next placeholder [])
+             []))
+   (let [new-acc (conj acc (split-at-point loc placeholder))]
+     (if next
+       (zip-walk next placeholder new-acc)
+       new-acc)))))
+
 
 (defn all-split-points
   [form placeholder]
