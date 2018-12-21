@@ -5,9 +5,9 @@
   (combine [this population]
     "operate a crossover operator on all pairs in the population" ))
 
-(defrecord simplecrossover [crossover-f])
+(defrecord SimpleCrossover [crossover-f])
 
-(extend-type simplecrossover
+(extend-type SimpleCrossover
   crossover
   (combine [this population]
     (doall
