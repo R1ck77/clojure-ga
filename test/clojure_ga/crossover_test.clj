@@ -141,33 +141,35 @@
     (is (= 8 (crossover/count-split-points '(+ (- 3 4) (* 1 (Math/sqrt 12))))))))
 
 
-(deftest interate-split-points-test
-  (let [unique-symbol (gensym)]
-    (testing "iterating over a value "
-      (is (= [[unique-symbol 42]]
-             (crossover/iterate-split-points 42 unique-symbol))))
-    (testing "iterating over a list"
-      (is (= [[unique-symbol '(+ 1 2)] ['(+ unique-symbol 2) 1] ['(+ 1 unique-symbol) 2]]
-             (crossover/iterate-split-points '(+ 1 2) unique-symbol))))))
+(deftest all-split-points-test
+  (testing "iterating over a value "
+    (is (= [[:x 42]]
+           (crossover/all-split-points 42 :x))))
+  (testing "iterating over a list"
+    (is (= [[:x '(+ 1 2)] ['(+ :x 2) 1] ['(+ 1 :x) 2]]
+           (crossover/all-split-points '(+ 1 2) :x))))
+  (testing "iterate: general case"
+    (is (= [[:x '(+ 1 (- 3 (* 1 5)) (Math/sqrt 12))]
+            ['(+ :x (- 3 (* 1 5)) (Math/sqrt 12)) 1]
+            ['(+ 1 :x (Math/sqrt 12)) '(- 3 (* 1 5))]
+            ['(+ 1 (- :x (* 1 5)) (Math/sqrt 12)) 3]
+            ['(+ 1 (- 3 :x) (Math/sqrt 12)) '(* 1 5)]
+            ['(+ 1 (- 3 (* :x 5)) (Math/sqrt 12)) 1]
+            ['(+ 1 (- 3 (* 1 :x)) (Math/sqrt 12)) 5]
+            
+            ['(+ 1 (- 3 (* 1 5)) :x) '(Math/sqrt 12)]            
+            ['(+ 1 (- 3 (* 1 5)) (Math/sqrt :x)) 12]]
+           (crossover/all-split-points '(+ 1 (- 3 (* 1 5)) (Math/sqrt 12)) :x)))))
 
-(comment
-  (testing "iterating over a simple list "
-    (let [unique-symbol (gensym)]
-      (is (= [[unique-symbol '(+ 1 2)]
-              [(list + unique-symbol 2) 1]
-              [(list + 1 unique-symbol) 2]]
-             (crossover/iterate-split-points '(+ 1 2) unique-symbol))))))
 
 (comment ;;; are those two tests at odds for the order of the results?
   (deftest split-at-point-test
    (testing "splitting a form at place 0 returns 0 and the original form"
-     (let [unique-symbol (gensym)]
-       (is (= [unique-symbol '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 unique-symbol)))
-       (is (= [unique-symbol 42] (crossover/split-at-point 42 0 unique-symbol)))))
+     (is (= [:x '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 :x)))
+     (is (= [:x 42] (crossover/split-at-point 42 0 :x))))
    (testing "spitting a form at an argument returns the argument and a form with replaced symbol"
-     (let [unique-symbol (gensym)]
-       (is (= [(list + unique-symbol 2) 1]
-              (crossover/split-at-point '(+ 1 2) 1 unique-symbol)))))))
+     (is (= [(list + :x 2) 1]
+            (crossover/split-at-point '(+ 1 2) 1 :x))))))
 
 
 (comment
