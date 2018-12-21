@@ -1,13 +1,14 @@
-(ns clojure-ga.crossover)
+(ns clojure-ga.crossover
+  (:require [clojure.zip :as zip]))
 
-(defprotocol Crossover
+(defprotocol crossover
   (combine [this population]
-    "Operate a crossover operator on all pairs in the population" ))
+    "operate a crossover operator on all pairs in the population" ))
 
-(defrecord SimpleCrossover [crossover-f])
+(defrecord simplecrossover [crossover-f])
 
-(extend-type SimpleCrossover
-  Crossover
+(extend-type simplecrossover
+  crossover
   (combine [this population]
     (doall
      (mapcat #(apply (get this :crossover-f) %)
@@ -18,7 +19,7 @@
                       (if (< (random-f) probability)
                         (crossover-operator a b)
                         (vector a b)))]
-    (->SimpleCrossover crossover-f)))
+    (->simplecrossover crossover-f)))
 
 (defn create-1p-vector-crossover [probability random-int-f random-f]
   (create-classic-crossover (fn [a b]
@@ -36,18 +37,23 @@
      (apply + (map count-split-points (rest form)))
      0)))
 
-;;; I miss an intermediate step: a version of count-split-points that returns pairs!!!
-(defn iterate-split-points [form placeholder]
-  (vector (vector placeholder form))
-  )
+(defn split-at-point [loc placeholder]
+  (let [left-loc (zip/edit loc (fn [node] placeholder))]
+    (vector (zip/root left-loc)
+            (zip/node loc))))
 
-(comment
-  (defn split-at-point [form index placeholder]
-    (vector 0 form))
+;;; i miss an intermediate step: a version of count-split-points that returns pairs!!!
 
-  (defn create-tree-crossover [probability random-f]
-    (create-classic-crossover (fn [a b]
-                                ['() '()])
-                              probability
-                              random-f)))
+(defn- zip-walk [loc placeholder acc]
+  (if (zip/branch? loc)
+    (zip-walk (-> loc zip/down zip/right) placeholder (conj acc (split-at-point loc placeholder)))
+    (let [new-acc (conj acc (split-at-point loc placeholder))
+          next (zip/right loc)]
+      (if next
+        (zip-walk next placeholder new-acc)
+        new-acc))))
+
+(defn all-split-points
+  [form placeholder]
+  (zip-walk (zip/seq-zip form) placeholder []))
 

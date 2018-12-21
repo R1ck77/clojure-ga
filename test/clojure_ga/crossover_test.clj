@@ -142,10 +142,13 @@
 
 
 (deftest interate-split-points-test
-  (testing "iterating over a value "
-    (let [unique-symbol (gensym)]
+  (let [unique-symbol (gensym)]
+    (testing "iterating over a value "
       (is (= [[unique-symbol 42]]
-             (crossover/iterate-split-points 42 unique-symbol))))))
+             (crossover/iterate-split-points 42 unique-symbol))))
+    (testing "iterating over a list"
+      (is (= [[unique-symbol '(+ 1 2)] ['(+ unique-symbol 2) 1] ['(+ 1 unique-symbol) 2]]
+             (crossover/iterate-split-points '(+ 1 2) unique-symbol))))))
 
 (comment
   (testing "iterating over a simple list "
