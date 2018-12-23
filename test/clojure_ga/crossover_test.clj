@@ -173,3 +173,10 @@
                          :e)
                   (+ :f (+ :g 12))))
                (crossover/merge-slices ['(+ (- :a :b) (+ (* :x :e) :x)) '(+ :f (+ :g 12))] :x)))))
+
+(deftest test-single-point-tree-crossover-test
+  (testing "trivial case: combining empty trees"
+    (let [tree-crossover  (crossover/create-1p-tree-crossover 1.0
+                                                             rand-int
+                                                             #(identity 0))]
+     (is (= [[] []] (crossover/combine tree-crossover [(list) (list)]))))))

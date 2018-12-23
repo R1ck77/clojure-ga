@@ -66,3 +66,7 @@ No insertion elements or multiple ones is ok"
                           node)) outer))
 
 
+(defn create-1p-tree-crossover [probability random-int-f random-f]
+  (create-classic-crossover (fn [a b]
+                              [[] []])
+                            probability random-f))
