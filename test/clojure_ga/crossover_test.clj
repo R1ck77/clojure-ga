@@ -194,4 +194,11 @@
       (is (= [:a '(+ 1 (* :b 2))]
              (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))])))
       (is (= [:a '(+ 1 (* :b 2))]
-             (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))]))))))
+             (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))])))))
+  (testing "general case "
+    (let [tree-crossover  (crossover/create-1p-tree-crossover 1
+                                                             (utils/create-iterator [4 3])
+                                                             #(identity 0))]
+      (is (= ['(Math/sqrt (+ (* :a (* :v :v)) (* :b :b))) '(* 0.5 :m :a)]
+             (crossover/combine tree-crossover ['(Math/sqrt (+ (* :a :a) (* :b :b)))
+                                                '(* 0.5 :m (* :v :v))]))))))
