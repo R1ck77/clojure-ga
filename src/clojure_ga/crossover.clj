@@ -59,14 +59,22 @@
 The outer part contains an insertion element that will be replaced with the inner part.
 
 No insertion elements or multiple ones is ok"
-  [[outer inner] insertion-element]
+  [outer inner insertion-element]
   (walk/postwalk (fn [node]
                         (if (= node insertion-element)
                           inner
                           node)) outer))
 
+(defn- pick-pairs [form random-int-f placeholder]
+  (let [split-points (all-split-points form placeholder)]
+    (println (count split-points) "->" split-points)
+    (nth split-points (random-int-f (count split-points)))))
 
 (defn create-1p-tree-crossover [probability random-int-f random-f]
   (create-classic-crossover (fn [a b]
-                              [[] []])
+                              (let [placeholder (gensym)
+                                    first-pair (pick-pairs a random-int-f placeholder)
+                                    second-pair (pick-pairs b random-int-f placeholder)]
+                                (vector (merge-slices (first first-pair) (second second-pair) placeholder)
+                                        (merge-slices (first second-pair) (second first-pair) placeholder))))
                             probability random-f))

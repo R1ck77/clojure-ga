@@ -157,26 +157,41 @@
 (deftest test-merge-slices
   (testing "trivial cases"
     (let [unique (gensym)]
-      (is (= 1 (crossover/merge-slices [unique 1] unique)))
-      (is (= '(+ 1 2) (crossover/merge-slices [unique '(+ 1 2)] unique)))))
+      (is (= 1 (crossover/merge-slices unique 1 unique)))
+      (is (= '(+ 1 2) (crossover/merge-slices unique '(+ 1 2) unique)))))
   (testing "general nested case"
     (is (= '(+ (- :a :b)
                (+ (* :d :e)
                   (+ :f (+ :g 12))))
-           (crossover/merge-slices ['(+ (- :a :b) (+ (* :d :e) :x)) '(+ :f (+ :g 12))] :x))))
+           (crossover/merge-slices '(+ (- :a :b) (+ (* :d :e) :x)) '(+ :f (+ :g 12)) :x))))
   (testing "special case: no insertion points"
-    (is (= '(+ 1 2) (crossover/merge-slices ['(+ 1 2) '(+ 10 20)] :x))))
+    (is (= '(+ 1 2) (crossover/merge-slices '(+ 1 2) '(+ 10 20) :x))))
   (testing "special case: multiple insertion points"
         (is (= '(+ (- :a :b)
                    (+
                     (* (+ :f (+ :g 12))
                          :e)
                   (+ :f (+ :g 12))))
-               (crossover/merge-slices ['(+ (- :a :b) (+ (* :x :e) :x)) '(+ :f (+ :g 12))] :x)))))
+               (crossover/merge-slices '(+ (- :a :b) (+ (* :x :e) :x)) '(+ :f (+ :g 12)) :x)))))
 
 (deftest test-single-point-tree-crossover-test
   (testing "trivial case: combining empty trees"
     (let [tree-crossover  (crossover/create-1p-tree-crossover 1.0
                                                              rand-int
                                                              #(identity 0))]
-     (is (= [[] []] (crossover/combine tree-crossover [(list) (list)]))))))
+      (is (= [:b :a]
+             (crossover/combine tree-crossover [:a :b])))))
+  (testing "trivial case: empty tree with normal tree"
+    (let [tree-crossover  (crossover/create-1p-tree-crossover 1.0
+                                                             (utils/create-iterator [0 2])
+                                                             #(identity 0))]
+      (is (= ['(* :b 2) '(+ 1 :a)]
+             (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))])))))
+  (testing "nothing happens if the probability is too low "
+    (let [tree-crossover  (crossover/create-1p-tree-crossover 0.8
+                                                             (utils/create-iterator [0 2])
+                                                             (utils/create-iterator [0.81 1]))]
+      (is (= [:a '(+ 1 (* :b 2))]
+             (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))])))
+      (is (= [:a '(+ 1 (* :b 2))]
+             (crossover/combine tree-crossover [:a '(+ 1 (* :b 2))]))))))
