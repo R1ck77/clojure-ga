@@ -154,21 +154,22 @@
             ['(+ 1 (- 3 (* 1 5)) (Math/sqrt :x)) 12]]
            (crossover/all-split-points '(+ 1 (- 3 (* 1 5)) (Math/sqrt 12)) :x)))))
 
-
-(comment
-  (deftest split-at-point-test
-   (testing "splitting a form at place 0 returns 0 and the original form"
-     (is (= [:x '(+ 1 2)] (crossover/split-at-point '(+ 1 2) 0 :x)))
-     (is (= [:x 42] (crossover/split-at-point 42 0 :x))))
-   (testing "spitting a form at an argument returns the argument and a form with replaced symbol"
-     (is (= [(list + :x 2) 1]
-            (crossover/split-at-point '(+ 1 2) 1 :x))))))
-
-
-(comment
-  (deftest tree-crossover-test
-   (testing "when combining empty chromosomes, the result is an empty chromosome"
-     (test-certain-tree-crossover ['() '()] ['() '()]))
-   (testing "when combining lists ..."
-     ;;TBD
-     )))
+(deftest test-merge-slices
+  (testing "trivial cases"
+    (let [unique (gensym)]
+      (is (= 1 (crossover/merge-slices [unique 1] unique)))
+      (is (= '(+ 1 2) (crossover/merge-slices [unique '(+ 1 2)] unique)))))
+  (testing "general nested case"
+    (is (= '(+ (- :a :b)
+               (+ (* :d :e)
+                  (+ :f (+ :g 12))))
+           (crossover/merge-slices ['(+ (- :a :b) (+ (* :d :e) :x)) '(+ :f (+ :g 12))] :x))))
+  (testing "special case: no insertion points"
+    (is (= '(+ 1 2) (crossover/merge-slices ['(+ 1 2) '(+ 10 20)] :x))))
+  (testing "special case: multiple insertion points"
+        (is (= '(+ (- :a :b)
+                   (+
+                    (* (+ :f (+ :g 12))
+                         :e)
+                  (+ :f (+ :g 12))))
+               (crossover/merge-slices ['(+ (- :a :b) (+ (* :x :e) :x)) '(+ :f (+ :g 12))] :x)))))

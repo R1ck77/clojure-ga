@@ -1,5 +1,6 @@
 (ns clojure-ga.crossover
-  (:require [clojure.zip :as zip]))
+  (:require [clojure.zip :as zip]
+            [clojure.walk :as walk]))
 
 (defprotocol Crossover
   (combine [this population]
@@ -51,5 +52,17 @@
 (defn all-split-points
   [form placeholder]
   (zip-walk (zip/seq-zip form) placeholder []))
+
+(defn merge-slices
+  "Merge two chromosome slices together
+
+The outer part contains an insertion element that will be replaced with the inner part.
+
+No insertion elements or multiple ones is ok"
+  [[outer inner] insertion-element]
+  (walk/postwalk (fn [node]
+                        (if (= node insertion-element)
+                          inner
+                          node)) outer))
 
 
