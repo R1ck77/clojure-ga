@@ -27,7 +27,20 @@
     (is (= [":x"]
            (mutation/mutate (mutation/create-tree-mutation str 1.0 #(identity 0))
                             [:x]))))
-  (comment (testing "general case, different probabilibities"
+  (testing "mutation inside a list's argument"
+    (is (= ['(+ "1" 2)]
+           (mutation/mutate (mutation/create-tree-mutation str
+                                                           0.5 (utils/create-iterator [1 0.2 1]))
+                            ['(+ 1 2)])))
+    (is (= ['(+ 1 "2")]
+           (mutation/mutate (mutation/create-tree-mutation str
+                                                           0.5 (utils/create-iterator [1 1 0.2]))
+                            ['(+ 1 2)])))
+    (is (= ["(+ 1 2)"]
+           (mutation/mutate (mutation/create-tree-mutation str
+                                                           0.5 (utils/create-iterator [0]))
+                            ['(+ 1 2)]))))
+  (comment (testing "general case, different probabilities"
      (is (= ['(Math/sqrt "(* :x :x)" (* :y ":y"))]
             (mutation/mutate (mutation/create-tree-mutation str 0.5 (utils/create-iterator [0.6 0.2 0.8 0.7 0.4]))
                              ['(Math/sqrt (* :x :x) (* :y :y))]))))))
