@@ -2,7 +2,7 @@
 
 (defprotocol Mutation
   (mutate [this population]
-    "Apply a mutation operator on all pairs of the population"))
+    "Apply a mutation operator on all chromosomes in the population"))
 
 (defrecord SimpleMutation [mutation-f])
 
@@ -17,3 +17,7 @@
                        (mutation-f element)
                        element))]
     (->SimpleMutation mutation-f)))
+
+(defn create-tree-mutation [mutation-f probability random-f]
+  (let [tree-mutation-f mutation-f]
+    (->SimpleMutation tree-mutation-f)))

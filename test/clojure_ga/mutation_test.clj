@@ -19,8 +19,15 @@
 (deftest vector-mutation
   (testing "general case, different probabilities"
     (is (= [":a" :b :c ":d" :e :f]
-           (mutation/mutate (mutation/create-vector-mutation (fn [chromosome]
-                                                               (str chromosome))
-                                                             0.5
-                                                             (utils/create-iterator [0.2 0.5 0.8 0.1 0.9 1.0]))
+           (mutation/mutate (mutation/create-vector-mutation str 0.5 (utils/create-iterator [0.2 0.5 0.8 0.1 0.9 1.0]))
                             [:a :b :c :d :e :f])))))
+
+(deftest tree-mutation
+  (testing "simplest meaningful case"
+    (is (= [":x"]
+           (mutation/mutate (mutation/create-tree-mutation str 1.0 #(identity 0))
+                            [:x]))))
+  (comment (testing "general case, different probabilibities"
+     (is (= ['(Math/sqrt "(* :x :x)" (* :y ":y"))]
+            (mutation/mutate (mutation/create-tree-mutation str 0.5 (utils/create-iterator [0.6 0.2 0.8 0.7 0.4]))
+                             ['(Math/sqrt (* :x :x) (* :y :y))]))))))
