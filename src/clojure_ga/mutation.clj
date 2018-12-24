@@ -1,5 +1,6 @@
 (ns clojure-ga.mutation
-  (require [clojure.walk :as walk]))
+  (require [clojure.walk :as walk]
+           [clojure.zip :as zip]))
 
 (defprotocol Mutation
   (mutate [this population]
@@ -19,9 +20,10 @@
                        element))]
     (->SimpleMutation mutation-f)))
 
-(defn- tree-mutation-f [mutation-f probability]
+(defn- tree-mutation-f [mutation-f probability random-f]
   (fn [chromosome]
-    (let [root (zip/seq-zip chromosome)]
+    (let [loc (zip/seq-zip chromosome)]
+      (if (zip/branch? loc))
       )))
 
 (defn create-tree-mutation [mutation-f probability random-f]
