@@ -63,5 +63,7 @@
 (defn expression-to-function [formula & variables]
   (let [variables-associations (create-associations variables)]
     (eval
-     (list 'fn (vec (map variables-associations variables))
-           (replace-symbols formula variables-associations)))))
+     `(fn ~(vec (map variables-associations variables))
+        (try
+          ~(replace-symbols formula variables-associations)
+          (catch ArithmeticException e# Double/NaN))))))

@@ -22,4 +22,10 @@
     (let [function (evo/expression-to-function '(√ (+ (* :x :x) (* :y :y) (* :z :z))) :x :y :z)
           expected-function #(Math/sqrt (+ (* % %) (* %2 %2) (* %3 %3)))]
       (is (= (expected-function 1 2 3)
-             (function 1 2 3))))))
+             (function 1 2 3)))))
+  (testing "catches exceptions"
+    (let [function (evo/expression-to-function '(/ 1 :x) :x)
+          expected-function #(/ 1 %)]
+      (is (= (expected-function 10)
+             (function 10)))
+      (is (Double/isNaN (function 0))))))
