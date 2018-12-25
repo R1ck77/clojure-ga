@@ -20,12 +20,29 @@
                        element))]
     (->SimpleMutation mutation-f)))
 
-(defn- tree-mutation-f [mutation-f probability random-f]
+(defn- goto-next-location [loc stop]
+  "Returns the next location or stop if there isn't any"
+  (if (zip/branch? loc)
+    (-> loc zip/down zip/right)
+    (or (zip/right loc) stop)))
+
+(defn- tree-traverse-f [loc mutation-f condition-f]
+  (let [stop (gensym)]
+    (let [mutated-location (if (condition-f)
+                             (zip/edit loc mutation-f)
+                             loc)
+          next-location (goto-next-location mutated-location stop)]
+      (if (identical? stop next-location)
+        (zip/root mutated-location)
+        (recur next-location mutation-f condition-f)))))
+
+(defn- tree-mutation-f [mutation-f condition-f]
   (fn [chromosome]
-    (let [loc (zip/seq-zip chromosome)]
-      (if (zip/branch? loc))
-      )))
+    (tree-traverse-f (zip/seq-zip chromosome)
+                     mutation-f
+                     condition-f)))
 
 (defn create-tree-mutation [mutation-f probability random-f]
-  (let [tree-mutation-f (tree-mutation-f mutation-f probability random-f)]
+  (let [condition-f #(< (random-f) probability)
+        tree-mutation-f (tree-mutation-f mutation-f condition-f)]
     (->SimpleMutation tree-mutation-f)))
