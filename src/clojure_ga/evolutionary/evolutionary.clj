@@ -2,7 +2,7 @@
   (:require [clojure.zip :as zip])
   (:import [java.lang Math]))
 
-(def nesting-probability 0.8)
+(def max-depth 10)
 
 (def unary-operators ['√ 'sin 'cos '𝑒])
 
@@ -23,20 +23,23 @@
 
 (def gen-term)
 
-(defn create-binary-expression [variables]
+(defn create-binary-expression [variables depth]
   (list (rand-nth binary-operators)
-        (gen-term variables)
-        (gen-term variables)))
+        (gen-term variables (inc depth))
+        (gen-term variables (inc depth))))
 
-(defn create-unary-expression [variables]
+(defn create-unary-expression [variables depth]
   (list (rand-nth unary-operators)
-        (gen-term variables)))
+        (gen-term variables (inc depth))))
 
 
-(defn pick-argument [variables random-f rand-nth]
-  (if (< (random-f) nesting-probability)
-    ((rand-nth [#(create-binary-expression variables) #(create-unary-expression variables)]))
+(defn pick-argument [variables random-f rand-nth depth]
+  (if (> (random-f) (/ depth max-depth))
+    ((rand-nth [#(create-binary-expression variables depth) #(create-unary-expression variables depth)]))
     ((rand-nth [#(rand-nth variables) #(gen-constant)]))))
 
-(defn gen-term [variables]
-  (pick-argument variables rand rand-nth))
+(defn gen-term
+  ([variables]
+   (gen-term variables 0))
+  ([variables depth]
+   (pick-argument variables rand rand-nth depth)))
