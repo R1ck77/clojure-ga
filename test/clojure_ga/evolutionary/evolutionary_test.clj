@@ -22,5 +22,4 @@
     (let [function (evo/expression-to-function '(√ (+ (* :x :x) (* :y :y) (* :z :z))) :x :y :z)
           expected-function #(Math/sqrt (+ (* % %) (* %2 %2) (* %3 %3)))]
       (is (= (expected-function 1 2 3)
-             (function 1 2 3)))
-      )))
+             (function 1 2 3))))))

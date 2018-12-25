@@ -50,14 +50,11 @@
   ([variables depth]
    (pick-argument variables rand rand-nth depth)))
 
-(defn- replace-symbols [form]
+(defn- replace-symbols [form variables-associations]
   (walk/postwalk (fn [element]
-                   (or (get symbol-to-function element) element))
-                 form))
-
-(defn- replace-variables [form variables-associations]
-  (walk/postwalk (fn [element]
-                   (or (get variables-associations element) element))
+                   (or (get symbol-to-function element)
+                       (get variables-associations element)
+                       element))
                  form))
 
 (defn- create-associations [variables]
@@ -67,5 +64,4 @@
   (let [variables-associations (create-associations variables)]
     (eval
      (list 'fn (vec (map variables-associations variables))
-           (replace-variables (replace-symbols formula)
-                              variables-associations)))))
+           (replace-symbols formula variables-associations)))))
