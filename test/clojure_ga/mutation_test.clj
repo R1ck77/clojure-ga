@@ -40,7 +40,16 @@
            (mutation/mutate (mutation/create-tree-mutation str
                                                            0.5 (utils/create-iterator [0]))
                             ['(+ 1 2)]))))
-  (comment (testing "general case, different probabilities"
-     (is (= ['(Math/sqrt "(* :x :x)" (* :y ":y"))]
-            (mutation/mutate (mutation/create-tree-mutation str 0.5 (utils/create-iterator [0.6 0.2 0.8 0.7 0.4]))
-                             ['(Math/sqrt (* :x :x) (* :y :y))]))))))
+  (testing "general case, different probabilities"
+    (is (= ['(Math/sqrt "(* :x :x)" (* :y ":y"))]
+           (mutation/mutate (mutation/create-tree-mutation str 0.5 (utils/create-iterator [0.6 0.2 0.8 0.7 0.4]))
+                            ['(Math/sqrt (* :x :x) (* :y :y))]))))
+  (testing "repeated-mutation"
+    (is (= ['(+ 1 (+ 1 (+ 1 (+ 1 1))))]
+           (mutation/mutate
+            (mutation/create-tree-mutation (fn [element]
+                                             (if (and (number? element) (> element 1))
+                                               (list '+ 1 (dec element))
+                                               element))
+                                           1 #(identity 0))
+            ['(+ 1 4)]) ))))
