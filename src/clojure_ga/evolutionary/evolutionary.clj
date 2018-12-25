@@ -1,10 +1,16 @@
 (ns clojure-ga.evolutionary.evolutionary
-  (:require [clojure.zip :as zip])
+  (:require [clojure.zip :as zip]
+            [clojure.walk :as walk])
   (:import [java.lang Math]))
 
 (def max-depth 10)
 
 (def unary-operators ['√ 'sin 'cos '𝑒])
+
+(def symbol-to-function {'√ 'Math/sqrt
+                         '𝑒 'Math/exp
+                         'sin 'Math/sin
+                         'cos 'Math/cos})
 
 (def binary-operators ['+ '- '* '/])
 
@@ -43,3 +49,12 @@
    (gen-term variables 0))
   ([variables depth]
    (pick-argument variables rand rand-nth depth)))
+
+(defn- replace-symbols [form variables-associations]  
+  (walk/postwalk (fn [element]
+                   (or (get symbol-to-function element) element))
+                 form))
+
+(defn expression-to-function [formula]
+  (eval (list 'fn [] (replace-symbols formula nil)))
+  )
