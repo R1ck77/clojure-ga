@@ -33,9 +33,8 @@
 
 (defn- pick-element
   "Return the selected chromosome from the population using the specified random value"
-  [population score-function random-value]
-  (let [weighted-population (sort-by-fitness population score-function)
-        total-weight (get-total-weight weighted-population)]
+  [weighted-population score-function random-value]
+  (let [total-weight (get-total-weight weighted-population)]
     (pick-element-from-weighted-population weighted-population (* total-weight random-value))))
 
 (defn select-chromosomes
@@ -45,7 +44,8 @@ Use the score function with the element itself to get its fitness and the random
   [n population score-function random-generator]
   (if (empty? population)
     []
-    (take n (repeatedly #(pick-element population score-function (random-generator))))))
+    (let [weighted-population (sort-by-fitness population score-function)]
+      (take n (repeatedly #(pick-element weighted-population score-function (random-generator)))))))
 
 (defprotocol Selector
   (select [this population]))
