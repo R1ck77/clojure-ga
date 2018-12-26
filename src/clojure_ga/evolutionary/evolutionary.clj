@@ -1,7 +1,10 @@
 (ns clojure-ga.evolutionary.evolutionary
   (:require [clojure.zip :as zip]
             [clojure.walk :as walk]
-            [clojure-ga.fitness-proportionate-selection :as fitness])
+            [clojure-ga.fitness-proportionate-selection :as fitness]
+            [clojure-ga.simple :as simple]
+            [clojure-ga.crossover :as crossover]
+            [clojure-ga.mutation :as mutation])
   (:import [java.lang Math]))
 
 (def max-depth 10)
@@ -90,7 +93,31 @@
         function (apply (partial expression-to-function chromosome) variables)]
    (reduce #(- % (error-at-point function %2 max-error)) total-error points)))
 
-(defn create-fitness-selector
+(defn- create-fitness-selector
   ([points variables] (create-fitness-selector points variables default-max-error))
   ([points variables max-error]
    (fitness/->FitnessSelector #(evaluate-chromosome % points variables max-error) rand)))
+
+(defn- create-argument-mutation-f [variables]
+  (fn [_]
+    (gen-term variables)))
+
+(defn variables-from-points [points]
+  (let [dimensions (dec (count (first points)))]
+    (vec (map (comp keyword str) (range dimensions)))))
+
+(defn create-simulator [points max-error]
+  (let [variables (variables-from-points points)]
+    (simple/->SimpleGA (create-fitness-selector points variables default-max-error)
+                       (crossover/create-1p-tree-crossover 0.2 rand-int rand)
+                       (mutation/create-tree-mutation (create-argument-mutation-f variables) 0.01 rand))))
+
+(defn- are-points-valid? [points]
+  (and (> (count points) 0)
+       (> 0 (count (first points)))))
+
+(defn simulation
+  [points max-error]
+  {:pre [(are-points-valid? points)]}
+  (let [evolver (create-simulator points max-error)]
+    ))

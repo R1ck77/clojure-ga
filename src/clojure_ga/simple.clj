@@ -26,6 +26,3 @@
     (if ((get this :condition-f) population)
       (evolve-while this (evolve (get this :evolver) population))
       population)))
-
-
-

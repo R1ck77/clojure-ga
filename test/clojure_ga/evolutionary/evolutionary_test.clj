@@ -60,3 +60,12 @@
                                       [[9 0] [130 1] [312 100]]
                                       [:x]
                                       10)))))
+
+(deftest test-variables-from-points
+  (testing "0 variables case"
+    (is (= [] (evo/variables-from-points [[1] [2] [3]]))))
+  (testing "1 variable case"
+    (is (= [:0] (evo/variables-from-points [[1 1] [2 2] [3 3]]))))
+  (testing "general case"
+    (is (= [:0 :1 :2 :3]
+           (evo/variables-from-points [[0 11 22 33 44] [23 23 34 12 98]]))))  )
