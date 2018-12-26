@@ -10,10 +10,13 @@
 
 (defn -main
   [& args]
-  (dorun
-   (map (fn [[score formula]]
-          (println score " -> " formula))
-        (sort-by #(first %)
-                 (evo/simulation (read-points (first args))
-                                 10 1000 1e6))))
+  (let [file (first args)
+        steps (Integer/valueOf (or (second args) "10"))
+        size (Integer/valueOf (or (nth args 2) "1000"))]
+    (dorun
+           (map (fn [[score formula]]
+                  (println score " -> " formula))
+                (sort-by #(first %)
+                         (evo/simulation (read-points (first args))
+                                         steps size 1e6)))))
   (shutdown-agents))
