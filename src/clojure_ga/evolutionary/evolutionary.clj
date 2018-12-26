@@ -1,6 +1,7 @@
 (ns clojure-ga.evolutionary.evolutionary
   (:require [clojure.zip :as zip]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [clojure-ga.fitness-proportionate-selection :as fitness])
   (:import [java.lang Math]))
 
 (def max-depth 10)
@@ -73,3 +74,23 @@
    (map #(let [value (function-1d %)]
            (spit file (str % " " value "\n") :append true ))
         (range from to delta))))
+
+(def default-max-error 1e6)
+
+(defn- eval-function-at-point [function point]
+  (- (first point)
+     (apply function (rest point))))
+
+(defn- error-at-point [function point max-error]
+  (min max-error
+       (Math/abs (eval-function-at-point function point))))
+
+(defn evaluate-chromosome [chromosome points variables max-error]
+  (let [total-error (* (count points) max-error)
+        function (apply (partial expression-to-function chromosome) variables)]
+   (reduce #(- % (error-at-point function %2 max-error)) total-error points)))
+
+(defn create-fitness-selector
+  ([points variables] (create-fitness-selector points variables default-max-error))
+  ([points variables max-error]
+   (fitness/->FitnessSelector #(evaluate-chromosome % points variables max-error) rand)))
