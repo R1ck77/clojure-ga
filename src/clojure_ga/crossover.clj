@@ -12,8 +12,9 @@
   Crossover
   (combine [this population]
     (doall
-     (mapcat #(apply (get this :crossover-f) %)
-             (partition 2 2 population)))))
+     (reduce #(concat % %2) []
+             (pmap #(apply (get this :crossover-f) %)
+                   (partition 2 2 population))))))
 
 (defn create-classic-crossover [crossover-operator probability random-f]
   (let [crossover-f (fn [a b]
