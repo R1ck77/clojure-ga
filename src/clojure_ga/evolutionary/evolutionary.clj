@@ -130,7 +130,8 @@
   {:pre [(are-points-valid? points)]}
   (let [variables (variables-from-points points)
         evolver (create-simulator points variables max-error)]
-    (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown generations))
-                         (map (fn [_]
-                                (gen-term variables))
-                              (range simulation-size)))))
+    (map #(vector (evaluate-chromosome % points variables max-error) %)
+         (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown generations))
+                              (map (fn [_]
+                                     (gen-term variables))
+                                   (range simulation-size))))))

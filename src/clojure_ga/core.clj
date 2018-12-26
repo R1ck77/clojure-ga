@@ -11,5 +11,8 @@
 (defn -main
   [& args]
   (dorun
-   (map println (evo/simulation (read-points (first args))
-                                10 1000 1e6))))
+   (map (fn [[score formula]]
+          (println score " -> " formula))
+        (sort-by #(first %)
+                 (evo/simulation (read-points (first args))
+                                 10 1000 1e6)))))
