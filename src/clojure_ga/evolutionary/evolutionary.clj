@@ -7,7 +7,7 @@
             [clojure-ga.mutation :as mutation])
   (:import [java.lang Math]))
 
-(def max-depth 10)
+(def max-depth 5)
 
 (def unary-operators ['√ 'sin 'cos '𝑒])
 
