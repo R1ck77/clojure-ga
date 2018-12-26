@@ -81,12 +81,15 @@
 (def default-max-error 1e6)
 
 (defn- eval-function-at-point [function point]
-  (- (first point)
-     (apply function (rest point))))
+  (double (- (first point)
+      (apply function (rest point)))))
 
 (defn- error-at-point [function point max-error]
-  (min max-error
-       (Math/abs (eval-function-at-point function point))))
+  (let [result (eval-function-at-point function point)]
+    (if (Double/isNaN result)
+      (+ max-error 1)
+      (min max-error
+           (Math/abs result)))))
 
 (defn evaluate-chromosome [chromosome points variables max-error]
   (let [total-error (* (count points) max-error)
@@ -106,18 +109,28 @@
   (let [dimensions (dec (count (first points)))]
     (vec (map (comp keyword str) (range dimensions)))))
 
-(defn create-simulator [points max-error]
-  (let [variables (variables-from-points points)]
-    (simple/->SimpleGA (create-fitness-selector points variables default-max-error)
-                       (crossover/create-1p-tree-crossover 0.2 rand-int rand)
-                       (mutation/create-tree-mutation (create-argument-mutation-f variables) 0.01 rand))))
+(defn create-simulator [points variables max-error]
+  (simple/->SimpleGA (create-fitness-selector points variables default-max-error)
+                     (crossover/create-1p-tree-crossover 0.2 rand-int rand)
+                     (mutation/create-tree-mutation (create-argument-mutation-f variables) 0.01 rand)))
+
+(defn create-countdown [counter]
+  (let [count (atom -1)]
+    (fn [_]
+      (swap! count inc)
+      (println @count)      
+      (< @count counter))))
 
 (defn- are-points-valid? [points]
   (and (> (count points) 0)
-       (> 0 (count (first points)))))
+       (> (count (first points)) 0)))
 
 (defn simulation
-  [points max-error]
+  [points generations simulation-size max-error]
   {:pre [(are-points-valid? points)]}
-  (let [evolver (create-simulator points max-error)]
-    ))
+  (let [variables (variables-from-points points)
+        evolver (create-simulator points variables max-error)]
+    (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown generations))
+                         (map (fn [_]
+                                (gen-term variables))
+                              (range simulation-size)))))
