@@ -67,7 +67,6 @@ No insertion elements or multiple ones is ok"
 
 (defn- pick-pairs [form random-int-f placeholder]
   (let [split-points (all-split-points form placeholder)]
-    (println (count split-points) "->" split-points)
     (nth split-points (random-int-f (count split-points)))))
 
 (defn create-1p-tree-crossover [probability random-int-f random-f]
