@@ -10,5 +10,6 @@
 
 (defn -main
   [& args]
-  (evo/simulation (read-points (first args))
-                  10 1000 1e6))
+  (dorun
+   (map println (evo/simulation (read-points (first args))
+                                10 1000 1e6))))
