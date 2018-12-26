@@ -15,4 +15,5 @@
           (println score " -> " formula))
         (sort-by #(first %)
                  (evo/simulation (read-points (first args))
-                                 10 1000 1e6)))))
+                                 10 1000 1e6))))
+  (shutdown-agents))

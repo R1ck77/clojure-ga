@@ -3,7 +3,7 @@
 (defn- sort-by-fitness
   [population score-function]
   (sort-by #(- (first %))
-           (map (fn [chromosome]
+           (pmap (fn [chromosome]
                   (vector (score-function chromosome) chromosome))
                 population)))
 
