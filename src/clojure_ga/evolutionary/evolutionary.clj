@@ -69,6 +69,7 @@
           (catch ArithmeticException e# Double/NaN))))))
 
 (defn debug-print-to-file [function-1d file from to delta]
-  (dorun (map #(let [value (function-1d %)]
-                 (spit file (str % " " value "\n") :append true ))
-              (range from to delta))))
+  (dorun
+   (map #(let [value (function-1d %)]
+           (spit file (str % " " value "\n") :append true ))
+        (range from to delta))))
