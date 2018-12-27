@@ -99,7 +99,7 @@
 (defn- create-fitness-selector
   ([points variables] (create-fitness-selector points variables default-max-error))
   ([points variables max-error]
-   (fitness/->FitnessSelector #(evaluate-chromosome % points variables max-error) rand)))
+   (fitness/->FitnessSelector (memoize #(evaluate-chromosome % points variables max-error)) rand)))
 
 (defn- create-argument-mutation-f [variables]
   (fn [_]
