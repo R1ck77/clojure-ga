@@ -11,16 +11,14 @@
 (extend-type SimpleCrossover
   Crossover
   (combine [this population]
-    (doall
-     (reduce #(concat % %2) []
-             (map #(apply (get this :crossover-f) %)
-                   (partition 2 2 population))))))
+    (let [function (get this :crossover-f)]
+      (mapcat function (partition 2 2 population)))))
 
 (defn create-classic-crossover [crossover-operator probability random-f]
-  (let [crossover-f (fn [a b]
+  (let [crossover-f (fn [[a b :as v]]
                       (if (< (random-f) probability)
                         (crossover-operator a b)
-                        (vector a b)))]
+                        v))]
     (->SimpleCrossover crossover-f)))
 
 (defn create-1p-vector-crossover [probability random-int-f random-f]
