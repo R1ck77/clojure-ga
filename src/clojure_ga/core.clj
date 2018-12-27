@@ -1,6 +1,7 @@
 (ns clojure-ga.core
   (:require [clojure.string :as string]
-            [clojure-ga.evolutionary.evolutionary :as evo]))
+            [clojure-ga.evolutionary.evolutionary :as evo])
+  (:gen-class))
 
 (defn- read-line [line-s]
   (vec (map #(Double/valueOf %) (string/split line-s #"\s"))))
