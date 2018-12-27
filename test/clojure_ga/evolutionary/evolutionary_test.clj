@@ -32,11 +32,11 @@
 
 (deftest evaluate-chromosome-test
   (testing "evaluate constant data with no error"
-    (is (= 3000 (evo/evaluate-chromosome 10
+    (is (= 3000.0 (evo/evaluate-chromosome 10
                               [[10 14 23] [10 0 23] [10 -100 -100]]
                               [:x :y]
                               1000)))
-    (is (= 3000 (evo/evaluate-chromosome '(+ 10 (+ (* :x 0) (* :y 0)))
+    (is (= 3000.0 (evo/evaluate-chromosome '(+ 10 (+ (* :x 0) (* :y 0)))
                               [[10 14 23] [10 0 23] [10 -100 -100]]
                               [:x :y]
                               1000))))
@@ -46,7 +46,7 @@
                                       [:x :y]
                                       1))))
   (testing "linear interpolation, no error"
-    (is (= 3 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
+    (is (= 3.0 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
                                       [[10 0] [13 1] [310 100]]
                                       [:x]
                                       1))))
@@ -56,7 +56,7 @@
                                       [:x]
                                       1))))
   (testing "linear interpolation, mixed errors"
-    (is (= 17 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
+    (is (= 17.0 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
                                       [[9 0] [130 1] [312 100]]
                                       [:x]
                                       10)))))
