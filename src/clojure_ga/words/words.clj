@@ -23,9 +23,23 @@
 
 (defn pick-random-words-sequence [text max-size rand-int]
   {:post (<= (count %) max-size)}
-  (let [start (rand-int)
+  (let [start (rand-int (count text))
         max-end (+ start max-size)]
-    (apply #(.substring text % %2)
-           (get-words-range (take-while #(< (second %) (+ start max-end))
-                                   (drop-while #(< (first %) start)
-                                               (words-seq text)))))))
+    (let [start-sequence (drop-while #(< (first %) start)
+                                     (words-seq text))
+          first-word-index (or (first (first start-sequence)) 0)]
+      (apply #(.substring text % %2)
+             (get-words-range (take-while #(<= (- (second %) first-word-index) max-size)
+                                          start-sequence))))))
+
+(defn clean-text
+  "Remove non letter/space characters"
+  [text]
+  (clojure.string/replace text
+                          #"[^\p{L}\s]+"
+                          " "))
+
+(defn create-random-challenge [max-size]
+  (pick-random-words-sequence (clean-text (slurp (clojure.java.io/resource "hamlet.txt")))
+                              max-size
+                              rand-int))

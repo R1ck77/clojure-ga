@@ -32,5 +32,22 @@
     (is (= "epsilon"
            (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 100 (fake-rand-int 21)))))
   (testing "out or range"
-    (is (= "" (words/pick-random-words-sequence "alpha" 3 (fake-rand-int 1000))))))
+    (is (= ""
+           (words/pick-random-words-sequence "alpha" 3 (fake-rand-int 1000)))))
+  (testing "general case"
+    (is (= "f g"
+           (words/pick-random-words-sequence "a b c d e f g h i j k l" 3 (fake-rand-int 10))))))
 
+(deftest test-clean-text
+  (testing "no text"
+    (is (= "" (words/clean-text ""))))
+  (testing "nothing to clean"
+    (is (= "text" (words/clean-text "text"))))
+  (testing "nothing remaining"
+    (is (= " " (words/clean-text ",^$%*^"))))
+  (testing "nothing but spaces remaining"
+    (is (= "        "
+           (words/clean-text " , ^$% *^  "))))
+  (testing "general case"
+    (is (= "foo  bar baz  "
+           (words/clean-text "foo, bar><baz%^&* ")))))
