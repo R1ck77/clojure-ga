@@ -61,4 +61,7 @@
   (testing "two general strings"
     (is (= 1 (words/simple-distance "bar" "baz")))
     (is (= 1 (words/simple-distance "baz" "bar")))
-    (is (= 8 (words/simple-distance "is general" "is specific")))))
+    (is (= 8 (words/simple-distance "is general" "is specific"))))
+  (testing "works with any sequence, actually"
+    (is (= 8 (words/simple-distance [\i \s \space \g \e \n \e \r \a \l]
+                                    [\i \s \space \s \p \e \c \i \f \i \c])))))
