@@ -9,11 +9,10 @@
 
 (def max-depth 5)
 
-(def unary-operators ['√ 'sin 'cos '𝑒])
+(def unary-operators ['√ 'sin '𝑒])
 
 (def symbol-to-function {'√ 'Math/sqrt
                          '𝑒 'Math/exp
-                         'sin 'Math/sin
                          'cos 'Math/cos})
 
 (def binary-operators ['+ '- '* '/])
