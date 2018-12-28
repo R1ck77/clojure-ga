@@ -5,15 +5,15 @@
 (defn- fake-rand-int [value]
   (fn [ & _] value))
 
-(deftest test-words-start-seq
+(deftest test-words-seq
   (testing "empty string"
-    (is (= [] (words/words-start-seq ""))))
+    (is (= '() (words/words-seq ""))))
   (testing "single word, various scenarios"
-    (is (= [0] (words/words-start-seq "foo")))
-    (is (= [0] (words/words-start-seq "foo ")))
-    (is (= [1] (words/words-start-seq " foo")))    
-    (is (= [1] (words/words-start-seq " foo ")))
-    (is (= [2] (words/words-start-seq "  foo   ")))))
+    (is (= '([0 3]) (words/words-seq "foo")))
+    (is (= '([0 3]) (words/words-seq "foo ")))
+    (is (= '([1 4]) (words/words-seq " foo")))    
+    (is (= '([1 4]) (words/words-seq " foo ")))
+    (is (= '([2 5]) (words/words-seq "  foo   ")))))
 
 (deftest test-pick-random-words-sequence
   (comment (testing "a general case"
