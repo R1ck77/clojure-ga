@@ -51,3 +51,14 @@
   (testing "general case"
     (is (= "foo  bar baz  "
            (words/clean-text "foo, bar><baz%^&* ")))))
+
+(deftest test-simple-distance
+  (testing "both empty"
+    (is (= 0 (words/simple-distance "" ""))))
+  (testing "one is empty"
+    (is (= 3 (words/simple-distance "" "foo")))
+    (is (= 3 (words/simple-distance "foo" ""))))
+  (testing "two general strings"
+    (is (= 1 (words/simple-distance "bar" "baz")))
+    (is (= 1 (words/simple-distance "baz" "bar")))
+    (is (= 8 (words/simple-distance "is general" "is specific")))))

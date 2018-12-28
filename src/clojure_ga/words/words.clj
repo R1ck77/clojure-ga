@@ -43,3 +43,8 @@
   (pick-random-words-sequence (clean-text (slurp (clojure.java.io/resource "hamlet.txt")))
                               max-size
                               rand-int))
+
+(defn simple-distance [s1 s2]
+  (+ (Math/abs (- (count s1) (count s2)))
+     (apply + (map (fn [c1 c2]
+                     (if (not= c1 c2) 1 0)) s1 s2))))
