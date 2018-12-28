@@ -22,15 +22,15 @@
     (is (= '([2 5] [8 11]) (words/words-seq "  foo   bar  ")))))
 
 (deftest test-pick-random-words-sequence
-  (comment (testing "a general case"
-     (is (= "gamma delta"
-            (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 13 (fake-rand-int 8)))))
-   (testing "start from 0"
-     (is (= "alpha beta"
-            (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 13 (fake-rand-int 0)))))
-   (testing "not enough letters"
-     (is (= "epsilon"
-            (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 100 (fake-rand-int 21)))))
-   (testing "out or range"
-     (is (= "" (words/pick-random-words-sequence "alpha" 3 (fake-rand-int 1000)))))))
+  (testing "a general case"
+    (is (= "gamma delta"
+           (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 13 (fake-rand-int 8)))))
+  (testing "start from 0"
+    (is (= "alpha beta"
+           (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 13 (fake-rand-int 0)))))
+  (testing "not enough letters"
+    (is (= "epsilon"
+           (words/pick-random-words-sequence "alpha beta gamma delta epsilon" 100 (fake-rand-int 21)))))
+  (testing "out or range"
+    (is (= "" (words/pick-random-words-sequence "alpha" 3 (fake-rand-int 1000))))))
 
