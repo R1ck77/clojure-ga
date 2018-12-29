@@ -14,7 +14,7 @@
 
 (def symbol-to-function {'√ 'Math/sqrt
                          '𝑒 'Math/exp
-                         'cos 'Math/cos})
+                         'sin 'Math/sin})
 
 (def binary-operators ['+ '- '* '/])
 
