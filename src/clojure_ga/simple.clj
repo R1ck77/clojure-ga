@@ -1,5 +1,6 @@
 (ns clojure-ga.simple
-  (:require [clojure-ga.fitness-proportionate-selection :as selection]
+  (:require [clojure-ga.selector :as selector]
+            [clojure-ga.fitness-proportionate-selection :as fitness]            
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]))
 
@@ -13,7 +14,7 @@
   (evolve [this population]
     (mutation/mutate (get this :mutation)
                      (crossover/combine (get this :crossover)
-                                        (selection/select (get this :selector) population)))))
+                                        (selector/select (get this :selector) population)))))
 
 (defprotocol Simulator
   (evolve-while [this population] "evolve multiple steps for a population"))

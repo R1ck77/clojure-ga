@@ -1,7 +1,8 @@
 (ns clojure-ga.fitness-proportionate-selection-test
   (:require [clojure.test :refer :all]
             [clojure-ga.utils :as utils]
-           [clojure-ga.fitness-proportionate-selection :as selection]))
+            [clojure-ga.selector :as selector]
+            [clojure-ga.fitness-proportionate-selection :as selection]))
 
 (defn- selection-to-random [total-elements index]
   (double
@@ -44,4 +45,4 @@
 
 (deftest test-record
   (testing "selection of an empty list"
-   (is (= [] (selection/select (selection/->FitnessSelector (fn [x] 12) rand) [])))))
+   (is (= [] (selector/select (selection/->FitnessSelector (fn [x] 12) rand) [])))))

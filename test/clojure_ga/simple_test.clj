@@ -3,13 +3,13 @@
             [clojure-ga.utils :as utils]
             [clojure-ga.simple :as simple]
             [clojure-ga.config :as config]
-            [clojure-ga.fitness-proportionate-selection :as selection]
+            [clojure-ga.selector :as selector]            
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]))
 
 (deftest evolve
   (testing "each evolve filters the population through selection, crossing and mutation, in order"
-    (let [simple-ga (simple/->SimpleGA (reify selection/Selector
+    (let [simple-ga (simple/->SimpleGA (reify selector/Selector
                                          (select [this population]
                                            (is (= [:initial-population] population))
                                            [:selected-population]))
@@ -27,7 +27,7 @@
 (deftest evolve-until
   (testing "evolve-until repeats the evolution while the condition is true "
     (let [iterator (utils/create-iterator [true true true false])
-          simulation (simple/->SimpleSimulation (simple/->SimpleGA (reify selection/Selector
+          simulation (simple/->SimpleSimulation (simple/->SimpleGA (reify selector/Selector
                                                                      (select [this population]
                                                                        population))
                                                                    (reify crossover/Crossover

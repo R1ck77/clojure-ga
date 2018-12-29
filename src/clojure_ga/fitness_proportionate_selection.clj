@@ -1,4 +1,5 @@
-(ns clojure-ga.fitness-proportionate-selection)
+(ns clojure-ga.fitness-proportionate-selection
+  (:require [clojure-ga.selector :as selector]))
 
 (defn- score-chromosome [chromosome score-function]
   (vector (score-function chromosome) chromosome))
@@ -50,14 +51,11 @@ Use the score function with the element itself to get its fitness and the random
     (let [weighted-population (sort-by-fitness population score-function)]
       (take n (repeatedly #(pick-element weighted-population score-function (random-generator)))))))
 
-(defprotocol Selector
-  (select [this population]))
-
 (defrecord FitnessSelector [fitness-f random-f])
 
 (extend-type FitnessSelector
-  Selector
-  (select [this population]
+  selector/Selector
+  (selector/select [this population]
     (let [fitness-f (get this :fitness-f)
           random-f (get this :random-f)]
      (select-chromosomes (count population) population fitness-f random-f))))
