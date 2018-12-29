@@ -23,7 +23,7 @@
 (defn- crossover-on-two-elements [counter p-cross expected-random-value]
   (let [conversion {:chromosome1 :result1
                     :chromosome2 :result2}
-        simple-crossover (crossover/->SimpleCrossover (fn [a b]
+        simple-crossover (crossover/->SimpleCrossover (fn [[a b]]
                                                         (swap! counter inc)
                                                         (is (and (= :chromosome1 a)
                                                                  (= :chromosome2 b)))
@@ -43,7 +43,7 @@
 
 (deftest multiple-values
   (testing "general case: multiple chromosomes"
-    (let [crossover (crossover/->SimpleCrossover (fn [a b] (vector (+ a 10) (- b 10))))]
+    (let [crossover (crossover/->SimpleCrossover (fn [[a b]] (vector (+ a 10) (- b 10))))]
       (is (= [11 -8 13 -6 15 -4 17 -2]
              (crossover/combine crossover [1 2 3 4 5 6 7 8]))))))
 
