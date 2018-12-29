@@ -1,23 +1,13 @@
 (ns clojure-ga.core
-  (:require [clojure.string :as string]
-            [clojure-ga.evolutionary.evolutionary :as evo])
+  (:require 
+            [clojure-ga.words.words :as words])
   (:gen-class))
-
-(defn- read-line [line-s]
-  (vec (map #(Double/valueOf %) (string/split line-s #"\s"))))
-
-(defn- read-points [file]
-  (vec (map read-line (string/split-lines (slurp file)))))
 
 (defn -main
   [& args]
-  (let [file (first args)
-        steps (Integer/valueOf (or (second args) "10"))
-        size (Integer/valueOf (or (nth args 2) "1000"))]
-    (dorun
-           (map (fn [[score formula]]
-                  (println score " -> " formula))
-                (sort-by #(first %)
-                         (evo/simulation (read-points (first args))
-                                         steps size 1e6)))))
+  (let [results (words/simulation (Integer/valueOf (or (first args) 10))
+                                  (Integer/valueOf (or (second args) 100))
+                                  (Integer/valueOf (or (get args 2) 1000)))]
+    (map (fn [[score result]]
+           (println (str score "->" result))) (sort-by first results)))
   (shutdown-agents))

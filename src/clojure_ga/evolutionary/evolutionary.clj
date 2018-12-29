@@ -4,7 +4,8 @@
             [clojure-ga.fitness-proportionate-selection :as fitness]
             [clojure-ga.simple :as simple]
             [clojure-ga.crossover :as crossover]
-            [clojure-ga.mutation :as mutation])
+            [clojure-ga.mutation :as mutation]
+            [clojure.string :as string])
   (:import [java.lang Math]))
 
 (def max-depth 5)
@@ -134,3 +135,19 @@
                               (map (fn [_]
                                      (gen-term variables))
                                    (range simulation-size))))))
+
+(defn- read-line [line-s]
+  (vec (map #(Double/valueOf %) (string/split line-s #"\s"))))
+
+(defn- read-points [file]
+  (vec (map read-line (string/split-lines (slurp file)))))
+
+(defn run-simulation [& args]
+  (let [file (first args)
+        steps (Integer/valueOf (or (second args) "10"))
+        size (Integer/valueOf (or (nth args 2) "1000"))]
+    (dorun
+     (map (fn [[score formula]]
+            (println score " -> " formula))
+          (sort-by first (simulation (read-points (first args))
+                               steps size 1e6))))))
