@@ -1,16 +1,7 @@
 (ns clojure-ga.fitness-proportionate-selection)
 
-(def fitness-key :fitness-value)
-
 (defn- score-chromosome [chromosome score-function]
-  (let [cached-fitness (get (meta chromosome) fitness-key)]
-    (if cached-fitness
-      (vector cached-fitness chromosome)
-      (if (instance? clojure.lang.IObj chromosome)
-        (let [new-fitness (score-function chromosome)]
-        (vector new-fitness
-                (with-meta chromosome {fitness-key new-fitness})))
-        (score-chromosome `(~'+ 0 ~chromosome) score-function)))))
+  (vector (score-function chromosome) chromosome))
 
 (defn- sort-by-fitness
   [population score-function]
