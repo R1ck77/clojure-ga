@@ -1,27 +1,11 @@
 (ns clojure-ga.conditions)
 
-(defprotocol EndCondition
-  (should-end? [this population]))
+(defn create-counter-condition-f [count]
+  (let [countdown (atom count)]
+    (fn [_]
+      (>= (swap! countdown dec) 0))))
 
-(defrecord Counter [atom-countdown])
-
-(defn create-count-end-condition [count]
-  (->Counter (atom count)))
-
-(extend-protocol EndCondition
-  Counter
-  (should-end? [this _]
-    (>= (swap! (:atom-countdown this) dec) 0)))
-
-(defrecord SideEffectCondition [end-condition side-effect-f])
-
-;;; TODO/FIXME all nice and good, but frankly a simple function for the condition will do…
-(defn create-side-effect-condition [condition side-effect-f]
-  (->SideEffectCondition condition side-effect-f))
-
-(extend-protocol EndCondition
-  SideEffectCondition
-  (should-end? [this population]
-    ((:side-effect-f this) population)
-    (should-end? (:end-condition this) population)))
-
+(defn create-side-effect-condition-f [condition-f side-effect-f]
+  (fn [population]
+    (side-effect-f population)
+    (condition-f population)))
