@@ -18,9 +18,9 @@
 
 (deftest vector-mutation
   (testing "general case, different probabilities"
-    (is (= [":a" :b :c ":d" :e :f]
+    (is (= (list [":a" :b :c ":d" :e :f])
            (mutation/mutate (mutation/create-vector-mutation str 0.5 (utils/create-iterator [0.2 0.5 0.8 0.1 0.9 1.0]))
-                            [:a :b :c :d :e :f])))))
+                            [[:a :b :c :d :e :f]])))))
 
 (deftest tree-mutation
   (testing "simplest meaningful case"
