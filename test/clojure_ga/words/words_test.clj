@@ -52,16 +52,21 @@
     (is (= "foo  bar baz  "
            (words/clean-text "foo, bar><baz%^&* ")))))
 
-(deftest test-simple-distance
+(deftest test-best-distance
   (testing "both empty"
-    (is (= 0 (words/simple-distance "" ""))))
+    (is (= 0 (words/best-distance "" ""))))
   (testing "one is empty"
-    (is (= 3 (words/simple-distance "" "foo")))
-    (is (= 3 (words/simple-distance "foo" ""))))
+    (is (= 3 (words/best-distance "" "foo")))
+    (is (= 3 (words/best-distance "foo" ""))))
   (testing "two general strings"
-    (is (= 1 (words/simple-distance "bar" "baz")))
-    (is (= 1 (words/simple-distance "baz" "bar")))
-    (is (= 8 (words/simple-distance "is general" "is specific"))))
+    (is (= 1 (words/best-distance "bar" "baz")))
+    (is (= 1 (words/best-distance "baz" "bar")))
+    (is (= 8 (words/best-distance "is general" "is specific"))))
   (testing "works with any sequence, actually"
-    (is (= 8 (words/simple-distance [\i \s \space \g \e \n \e \r \a \l]
-                                    [\i \s \space \s \p \e \c \i \f \i \c])))))
+    (is (= 8 (words/best-distance [\i \s \space \g \e \n \e \r \a \l]
+                                    [\i \s \space \s \p \e \c \i \f \i \c]))))
+  (testing "returns the best possible match of strings"
+    (is (= 3 (words/best-distance "   foo" "foo")))
+    (is (= 4 (words/best-distance "a   foo" "foo")))
+    (is (= 4 (words/best-distance "a   foo" "foo")))
+    (is (= 4 (words/best-distance "a foobar" "foobar a")))))

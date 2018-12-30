@@ -56,20 +56,25 @@
                               max-size
                               rand-int))
 
-;;; TODO/FIXME probably way too simple: for different sizes get the "best" possible distance
-(defn simple-distance [s1 s2]
+(defn- from-start-distance [s1 s2]
   (+ (Math/abs (- (count s1)
                   (count s2)))
      (apply + (map (fn [c1 c2]
                      (if (not= c1 c2) 1 0))
                    s1 s2))))
 
+(defn best-distance [s1 s2]
+  (apply min
+         (map #(+ % (from-start-distance (drop % s1) s2))
+              (range (inc (count s1))))))
+
+
 (defn create-tournament-selector
   [challenge]
   (tournament/create-selector words-tournament-selector-rank
                               (fn [chromosome]
                                 (-
-                                 (simple-distance challenge chromosome)))
+                                 (best-distance challenge chromosome)))
                               rand-nth))
 
 (defn create-words-crossover-operator []
@@ -109,6 +114,6 @@
     (println (str "*** The challenge is: " challenge))
     (let [simulation(simple/->SimpleSimulation evolver (create-countdown generations))
           population (take simulation-size (repeatedly #(create-random-word characters words-seed-max-size)))]
-          (map #(vector (simple-distance challenge %) %)         
+          (map #(vector (best-distance challenge %) %)         
                (simple/evolve-while simulation
                                     population)))))

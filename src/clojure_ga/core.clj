@@ -10,5 +10,7 @@
                                   (Integer/valueOf (or (get args 2) 1000)))]
     (doall
      (map (fn [[score result]]
-            (println (str score " : " (apply str result)))) (sort-by first results))))
+            (println (str score " : " (apply str result))))
+          (reverse (take 10
+                         (sort-by #(- (first %)) results))))))
   (shutdown-agents))
