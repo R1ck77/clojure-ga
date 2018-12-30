@@ -1,11 +1,12 @@
 (ns clojure-ga.words.words
   (:require [clojure-ga.simple :as simple]
-            [clojure-ga.fitness-proportionate-selection :as fitness]
+            [clojure-ga.tournament-selection :as tournament]
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]))
 
 (def words-crossover-probability 0.2)
 (def words-mutation-probability 0.01)
+(def words-tournament-selector-rank 2)
 
 (def words-seed-max-size 5)
 
@@ -63,10 +64,13 @@
                      (if (not= c1 c2) 1 0))
                    s1 s2))))
 
-(defn create-fitness-selector
+(defn create-tournament-selector
   [challenge]
-  (fitness/->FitnessSelector (fn [chromosome] (- (simple-distance challenge chromosome)))
-                             rand))
+  (tournament/create-selector words-tournament-selector-rank
+                              (fn [chromosome]
+                                (-
+                                 (simple-distance challenge chromosome)))
+                              rand-nth))
 
 (defn create-words-crossover-operator []
   (crossover/create-1p-vector-crossover words-crossover-probability
@@ -92,14 +96,14 @@
 
 (defn create-random-word [characters max-size]
   (let [size (inc (rand-int max-size))]
-    (take size (repeatedly #(rand-nth characters)))))
+    (vec (take size (repeatedly #(rand-nth characters))))))
 
 (defn simulation
   [max-challenge-size generations simulation-size]
   (let [data (prepare-data max-challenge-size)
         characters (:characters data)
         challenge (:challenge data)
-        evolver (simple/->SimpleGA (create-fitness-selector challenge)
+        evolver (simple/->SimpleGA (create-tournament-selector challenge)
                                    (create-words-crossover-operator)
                                    (create-words-mutation-operator characters))]
     (println (str "*** The challenge is: " challenge))
