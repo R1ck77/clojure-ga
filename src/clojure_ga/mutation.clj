@@ -13,11 +13,14 @@
   (mutate [this population]
     (map (get this :mutation-f) population)))
 
+(defn- vector-mutation-operator [mutation-f probability random-f element]
+  (if (< (random-f) probability)
+    (mutation-f element)
+    element))
+
 (defn create-vector-mutation [mutation-f probability random-f]
-  (let [mutation-f (fn [element]
-                     (if (< (random-f) probability)
-                       (mutation-f element)
-                       element))]
+  (let [mutation-f (fn [chromosome]
+                     (vec (map (partial vector-mutation-operator mutation-f probability random-f) chromosome)))]
     (->SimpleMutation mutation-f)))
 
 (defn- goto-next-location [loc stop]
