@@ -5,18 +5,19 @@
             [clojure-ga.simple :as simple]
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [clojure-ga.conditions :as conditions])
   (:import [java.lang Math]))
 
 (def max-depth 5)
 
-(def unary-operators ['√ 'sin '𝑒])
+(def unary-operators ['sin '𝑒])
 
-(def symbol-to-function {'√ 'Math/sqrt
+(def binary-operators ['+ '- '* '/ 'pow])
+
+(def symbol-to-function {'pow 'Math/pow
                          '𝑒 'Math/exp
                          'sin 'Math/sin})
-
-(def binary-operators ['+ '- '* '/])
 
 (def constants-distribution (flatten
                              (vector (repeat 32 1)
@@ -110,11 +111,11 @@
                      (mutation/create-tree-mutation (create-argument-mutation-f variables) 0.01 rand)))
 
 (defn create-countdown [counter]
-  (let [count (atom -1)]
-    (fn [_]
-      (swap! count inc)
-      (println @count)      
-      (< @count counter))))
+  (let [current (atom 0)]
+    (conditions/create-side-effect-condition-f (conditions/create-counter-condition-f counter)
+                                               (fn [_] (println "Generation" (swap! current inc))))))
+
+
 
 (defn- are-points-valid? [points]
   (and (> (count points) 0)
