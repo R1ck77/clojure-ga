@@ -1,7 +1,7 @@
 (ns clojure-ga.evolutionary.evolutionary
   (:require [clojure.zip :as zip]
             [clojure.walk :as walk]
-            [clojure-ga.fitness-proportionate-selection :as fitness]
+            [clojure-ga.tournament-selection :as tournament]
             [clojure-ga.simple :as simple]
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]
@@ -78,28 +78,23 @@
            (spit file (str % " " value "\n") :append true ))
         (range from to delta))))
 
-(def default-max-error 1e6)
-
 (defn- eval-function-at-point [function point]
   (double (- (first point)
       (apply function (rest point)))))
 
-(defn- error-at-point [function point max-error]
+(defn- error-at-point [function point]
   (let [result (eval-function-at-point function point)]
     (if (Double/isNaN result)
-      (+ max-error 1)
-      (min max-error
-           (Math/abs result)))))
+      Double/NEGATIVE_INFINITY
+      (- (Math/abs result)))))
 
-(defn evaluate-chromosome [chromosome points variables max-error]
-  (let [total-error (* (count points) max-error)
-        function (apply (partial expression-to-function chromosome) variables)]
-   (reduce #(- % (error-at-point function %2 max-error)) total-error points)))
+(defn evaluate-chromosome [chromosome points variables]
+  (let [function (apply (partial expression-to-function chromosome) variables)]
+   (reduce #(+ % (error-at-point function %2)) 0 points)))
 
-(defn- create-fitness-selector
-  ([points variables] (create-fitness-selector points variables default-max-error))
-  ([points variables max-error]
-   (fitness/->FitnessSelector (memoize #(evaluate-chromosome % points variables max-error)) rand)))
+(defn- create-tournament-selector
+  ([points variables]
+   (tournament/create-selector 2 (memoize #(evaluate-chromosome % points variables)) rand-nth)))
 
 (defn- create-argument-mutation-f [variables]
   (fn [_]
@@ -109,8 +104,8 @@
   (let [dimensions (dec (count (first points)))]
     (vec (map (comp keyword str) (range dimensions)))))
 
-(defn create-simulator [points variables max-error]
-  (simple/->SimpleGA (create-fitness-selector points variables default-max-error)
+(defn create-simulator [points variables]
+  (simple/->SimpleGA (create-tournament-selector points variables)
                      (crossover/create-1p-tree-crossover 0.2 rand-int rand)
                      (mutation/create-tree-mutation (create-argument-mutation-f variables) 0.01 rand)))
 
@@ -126,11 +121,11 @@
        (> (count (first points)) 0)))
 
 (defn simulation
-  [points generations simulation-size max-error]
+  [points generations simulation-size]
   {:pre [(are-points-valid? points)]}
   (let [variables (variables-from-points points)
-        evolver (create-simulator points variables max-error)]
-    (map #(vector (evaluate-chromosome % points variables max-error) %)
+        evolver (create-simulator points variables)]
+    (map #(vector (evaluate-chromosome % points variables) %)
          (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown generations))
                               (map (fn [_]
                                      (gen-term variables))
@@ -149,5 +144,4 @@
     (dorun
      (map (fn [[score formula]]
             (println score " -> " formula))
-          (sort-by first (simulation (read-points (first args))
-                               steps size 1e6))))))
+          (sort-by first (simulation (read-points (first args)) steps size))))))
