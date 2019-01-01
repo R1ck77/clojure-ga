@@ -17,6 +17,7 @@
 
 (def symbol-to-function {'pow 'Math/pow
                          '𝑒 'Math/exp
+                         '√ 'Math/sqrt
                          'sin 'Math/sin})
 
 (def constants-distribution (flatten

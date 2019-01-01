@@ -32,34 +32,27 @@
 
 (deftest evaluate-chromosome-test
   (testing "evaluate constant data with no error"
-    (is (= 3000.0 (evo/evaluate-chromosome 10
+    (is (= 0.0 (evo/evaluate-chromosome 10
                               [[10 14 23] [10 0 23] [10 -100 -100]]
-                              [:x :y]
-                              1000)))
-    (is (= 3000.0 (evo/evaluate-chromosome '(+ 10 (+ (* :x 0) (* :y 0)))
+                              [:x :y])))
+    (is (= 0.0 (evo/evaluate-chromosome '(+ 10 (+ (* :x 0) (* :y 0)))
                               [[10 14 23] [10 0 23] [10 -100 -100]]
-                              [:x :y]
-                              1000))))
-  (testing "evaluate constant data with maximum error"
-    (is (= 0 (evo/evaluate-chromosome '(+ 10 (+ :x :y))
-                                      [[0 14 23] [0 0 23] [0 -100 -100]]
-                                      [:x :y]
-                                      1))))
+                              [:x :y]))))
+  (testing "evaluate constant data"
+    (is (= (double (- (+ 47 33 190)))
+           (evo/evaluate-chromosome '(+ 10 (+ :x :y))
+                                    [[0 14 23] [0 0 23] [0 -100 -100]]
+                                    [:x :y]))))
   (testing "linear interpolation, no error"
-    (is (= 3.0 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
-                                      [[10 0] [13 1] [310 100]]
-                                      [:x]
-                                      1))))
+    (is (= 0.0
+           (evo/evaluate-chromosome '(+ 10 (* 3 :x))
+                                    [[10 0] [13 1] [310 100]]
+                                    [:x]))))
   (testing "linear interpolation, max error"
-    (is (= 0 (evo/evaluate-chromosome '(+ 15 (* 3 :x))
-                                      [[10 0] [13 1] [310 100]]
-                                      [:x]
-                                      1))))
-  (testing "linear interpolation, mixed errors"
-    (is (= 17.0 (evo/evaluate-chromosome '(+ 10 (* 3 :x))
-                                      [[9 0] [130 1] [312 100]]
-                                      [:x]
-                                      10)))))
+    (is (= (double (- (+ 5 5 5)))
+           (evo/evaluate-chromosome '(+ 15 (* 3 :x))
+                                    [[10 0] [13 1] [310 100]]
+                                    [:x])))))
 
 (deftest test-variables-from-points
   (testing "0 variables case"
