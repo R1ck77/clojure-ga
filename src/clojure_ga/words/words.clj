@@ -2,7 +2,9 @@
   (:require [clojure-ga.simple :as simple]
             [clojure-ga.tournament-selection :as tournament]
             [clojure-ga.crossover :as crossover]
-            [clojure-ga.mutation :as mutation]))
+            [clojure-ga.mutation :as mutation]
+            [clojure-ga.conditions :as conditions]
+            [clojure-ga.statistics :as statistics]))
 
 (def words-crossover-probability 0.2)
 (def words-mutation-probability 0.01)
@@ -68,13 +70,15 @@
          (map #(+ % (from-start-distance (drop % s1) s2))
               (range (inc (count s1))))))
 
+(defn- create-score-function [challenge]
+  (fn [chromosome]
+    (-
+     (best-distance challenge chromosome))))
 
 (defn create-tournament-selector
   [challenge]
   (tournament/create-selector words-tournament-selector-rank
-                              (fn [chromosome]
-                                (-
-                                 (best-distance challenge chromosome)))
+                              (create-score-function challenge)
                               rand-nth))
 
 (defn create-words-crossover-operator []
@@ -87,12 +91,18 @@
                                     words-mutation-probability
                                     rand))
 
-(defn create-countdown [counter]
-  (let [count (atom -1)]
-    (fn [_]
-      (swap! count inc)
-      (println @count)      
-      (< @count counter))))
+(defn- population-stats [challenge population]
+  (let [scores (map (create-score-function challenge) population)]
+    (apply #(format "%s %s max: %s" % %2 (apply max scores))
+           (map double (statistics/mean-std-dev scores)))))
+
+(defn create-countdown [challenge counter]
+  (let [current (atom 0)]
+    (conditions/create-side-effect-condition-f (conditions/create-counter-condition-f counter)
+                                               (fn [population]
+                                                 (println "Generation"
+                                                          (swap! current inc)
+                                                          (population-stats challenge population))))))
 
 (defn- prepare-data [max-challenge-size]
   (let [clean-text (read-source-text)]
@@ -112,7 +122,7 @@
                                    (create-words-crossover-operator)
                                    (create-words-mutation-operator characters))]
     (println (str "*** The challenge is: " challenge))
-    (let [simulation(simple/->SimpleSimulation evolver (create-countdown generations))
+    (let [simulation(simple/->SimpleSimulation evolver (create-countdown challenge generations))
           population (take simulation-size (repeatedly #(create-random-word characters words-seed-max-size)))]
           (map #(vector (best-distance challenge %) %)         
                (simple/evolve-while simulation
