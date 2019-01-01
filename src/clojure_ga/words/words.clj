@@ -124,6 +124,6 @@
     (println (str "*** The challenge is: " challenge))
     (let [simulation(simple/->SimpleSimulation evolver (create-countdown challenge generations))
           population (take simulation-size (repeatedly #(create-random-word characters words-seed-max-size)))]
-          (map #(vector (best-distance challenge %) %)         
+          (map #(vector (- (best-distance challenge %)) %)         
                (simple/evolve-while simulation
                                     population)))))

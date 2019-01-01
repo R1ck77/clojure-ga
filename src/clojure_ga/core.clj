@@ -11,6 +11,5 @@
     (doall
      (map (fn [[score result]]
             (println (str score " : " (apply str result))))
-          (reverse (take 10
-                         (sort-by #(- (first %)) results))))))
+          (reverse (take 10 (sort-by #(- (first %)) results))))))
   (shutdown-agents))
