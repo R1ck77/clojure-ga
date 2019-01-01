@@ -91,18 +91,19 @@
                                     words-mutation-probability
                                     rand))
 
-(defn- population-stats [challenge population]
-  (let [scores (map (create-score-function challenge) population)]
-    (apply #(format "%s %s max: %s" % %2 (apply max scores))
-           (map double (statistics/mean-std-dev scores)))))
+(defn- population-stats [scores]
+  (apply #(format "%s %s max: %s" % %2 (apply max scores))
+         (map double (statistics/mean-std-dev scores))))
 
 (defn create-countdown [challenge counter]
   (let [current (atom 0)]
-    (conditions/create-side-effect-condition-f (conditions/create-counter-condition-f counter)
-                                               (fn [population]
-                                                 (println "Generation"
-                                                          (swap! current inc)
-                                                          (population-stats challenge population))))))
+    (fn [population]
+      (let [counter-f (conditions/create-counter-condition-f counter)
+            scores (map (create-score-function challenge) population)
+            max-score (apply max scores)]
+        (println (swap! current inc) (population-stats scores))
+        (and (counter-f population)
+             (< max-score 0))))))
 
 (defn- prepare-data [max-challenge-size]
   (let [clean-text (read-source-text)]
