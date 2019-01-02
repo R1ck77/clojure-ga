@@ -7,7 +7,9 @@
 (defn gen-cities
   ([N] (gen-cities N rand))
   ([N rand]
-   (throw (IllegalArgumentException. "N must be > 1"))))
+   (if (> N 1)
+     (repeatedly N #(vector (rand) (rand)))
+     (throw (IllegalArgumentException. "N must be > 1")))))
 
 
 
