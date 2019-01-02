@@ -3,10 +3,12 @@
             [clojure-ga.simple :as simple]            
             [clojure-ga.tournament-selection :as tournament]
             [clojure-ga.crossover :as crossover]
-            [clojure-ga.mutation :as mutation]))
+            [clojure-ga.mutation :as mutation]
+            [clojure-ga.conditions :as conditions]))
 
 (def tsp-crossover-probability 0.2)
 (def tsp-mutation-probability 0.01)
+(def tsp-tournament-selector-rank 2)
 
 (defn gen-cities
   ([N] (gen-cities N rand))
@@ -47,3 +49,40 @@
                         (exchange-elements chromosome rand-int)
                         chromosome))]
      (mutation/->SimpleMutation mutation-f))))
+
+(defn- remove-from-collection [x-int rand-int]
+  (let [index (rand-int (count x-int))]
+    (vector (get x-int index)
+            (vec (concat (subvec x-int 0 index)
+                     (subvec x-int (inc index)
+                             (count x-int)))))))
+
+(defn new-random-route [N rand-int]
+  (let [seed (atom (vec (range N)))
+        result (atom [])]
+    (while (not (empty? @seed))
+      (let [[next next-seed] (remove-from-collection @seed rand-int)]
+        (reset! seed next-seed)
+        (swap! result #(conj % next))))
+    @result))
+
+(defn create-tournament-selector [cities]
+  (tournament/create-selector tsp-tournament-selector-rank
+                              (fn [route] (- (travel-length cities route)))
+                              rand-nth))
+
+(defn create-countdown [cities generations]
+  (println "TODO: Create a decent countdown funcion :(")
+  (conditions/create-counter-condition-f generations))
+
+(defn simulation
+  [N generations population-size]
+  (let [cities (gen-cities N rand)
+        evolver (simple/->SimpleGA (create-tournament-selector cities)
+                                   (create-crossover-operator)
+                                   (create-mutation-operator))]
+    (println "TODO: put the challenge here somehow")
+    (let [simulation (simple/->SimpleSimulation evolver (create-countdown cities generations))
+          population (repeatedly population-size #(new-random-route population-size rand-int))]
+      (map #(vector (- (travel-length cities %)))
+           (simple/evolve-while simulation population)))))
