@@ -4,7 +4,8 @@
             [clojure-ga.tournament-selection :as tournament]
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]
-            [clojure-ga.conditions :as conditions]))
+            [clojure-ga.conditions :as conditions]
+            [clojure-ga.statistics :as statistics]))
 
 (def tsp-crossover-probability 0.2)
 (def tsp-mutation-probability 0.01)
@@ -14,7 +15,7 @@
   ([N] (gen-cities N rand))
   ([N rand]
    (if (> N 1)
-     (repeatedly N #(vector (rand) (rand)))
+     (vec (repeatedly N #(vector (rand) (rand))))
      (throw (IllegalArgumentException. "N must be > 1")))))
 
 (defn- distance [[ax ay] [bx by]]
@@ -28,7 +29,7 @@
                 (partition 2 1 (map #(get cities %)  order)))))
 
 (defn create-crossover-operator []
-  (let [crossover-function (fn [[a b]]                                        
+  (let [crossover-function (fn [a b]                                        
                              (utils/cross-sequences a b rand-nth))]
     (crossover/create-classic-crossover crossover-function
                                         tsp-crossover-probability
@@ -68,12 +69,21 @@
 
 (defn create-tournament-selector [cities]
   (tournament/create-selector tsp-tournament-selector-rank
-                              (fn [route] (- (travel-length cities route)))
+                              (fn [route] (- (travel-length cities (vec route))))
                               rand-nth))
 
+;;; TODO/FIXME repeated in the words demo
+(defn- population-stats [scores]
+  (apply #(format "%s %s min: %s" % %2 (apply min scores))
+         (map double (statistics/mean-std-dev scores))))
+
 (defn create-countdown [cities generations]
-  (println "TODO: Create a decent countdown funcion :(")
-  (conditions/create-counter-condition-f generations))
+  (let [current (atom 0)
+        counter-f (conditions/create-counter-condition-f generations)]
+    (fn [population]
+      (let [scores (map #(travel-length cities %) population)]        
+        (println (swap! current inc) (population-stats scores))
+        (counter-f population)))))
 
 (defn simulation
   [N generations population-size]
@@ -83,6 +93,6 @@
                                    (create-mutation-operator))]
     (println "TODO: put the challenge here somehow")
     (let [simulation (simple/->SimpleSimulation evolver (create-countdown cities generations))
-          population (repeatedly population-size #(new-random-route population-size rand-int))]
-      (map #(vector (- (travel-length cities %)))
-           (simple/evolve-while simulation population)))))
+          population (repeatedly population-size #(new-random-route N rand-int))]
+      (dorun (map println (reverse (take 10 (sort (map #(travel-length cities %)
+                                               (simple/evolve-while simulation population))))))))))

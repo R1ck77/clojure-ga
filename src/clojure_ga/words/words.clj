@@ -91,6 +91,7 @@
                                     words-mutation-probability
                                     rand))
 
+;;; TODO/FIXME repeated in the TSP demo
 (defn- population-stats [scores]
   (apply #(format "%s %s max: %s" % %2 (apply max scores))
          (map double (statistics/mean-std-dev scores))))
