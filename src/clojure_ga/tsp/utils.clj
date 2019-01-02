@@ -32,3 +32,8 @@
     (vector (vec (concat a-head b-middle a-tail))
             (vec (concat b-head a-middle b-tail)))))
 
+(defn cross-sequences [xa xb rand-nth]
+  (let [subsets (common-subsets xa xb)]
+    (if (empty? subsets)
+      (vector xa xb)
+      (replace-subset xa xb (rand-nth subsets)))))

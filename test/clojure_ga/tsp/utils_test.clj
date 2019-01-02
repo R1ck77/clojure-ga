@@ -32,3 +32,11 @@
            (utils/replace-subset [:a :e :d :c :b :f]
                                  [:f :b :c :d :e :a]
                                  #{:b :c :d :e})))))
+
+(deftest cross-sequences-test
+  (testing "general case"
+    (is (= [[:a :c :b :d] [:d :b :c :a]]
+           (utils/cross-sequences [:a :b :c :d]
+                                  [:d :c :b :a]
+                                  (fn [xo]
+                                    (nth xo 3)))))))
