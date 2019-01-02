@@ -94,5 +94,12 @@
     (println "TODO: put the challenge here somehow")
     (let [simulation (simple/->SimpleSimulation evolver (create-countdown cities generations))
           population (repeatedly population-size #(new-random-route N rand-int))]
-      (dorun (map println (reverse (take 10 (sort (map #(travel-length cities %)
-                                               (simple/evolve-while simulation population))))))))))
+      (let [best-scored-results (sort-by first (map #(vector (travel-length cities %) %) (simple/evolve-while simulation population)))
+            best-results (map second best-scored-results)
+            best-scores (take 10 (map first best-scored-results))]
+        (println "* Best scores")
+        (dorun (map println (reverse best-scores)))
+        (println "* Best solution")
+        (dorun (map #(let [city (get cities %)]
+                       (println (first city) (second city) ))
+                    (first best-results)))))))
