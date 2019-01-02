@@ -4,6 +4,9 @@
             [clojure-ga.crossover :as crossover]
             [clojure-ga.mutation :as mutation]))
 
+(def tsp-crossover-probability 0.2)
+(def tsp-mutation-probability 0.01)
+
 (defn gen-cities
   ([N] (gen-cities N rand))
   ([N rand]
@@ -20,3 +23,9 @@
 (defn travel-length [cities order]
   (apply + (map #(apply distance %)
                 (partition 2 1 (map #(get cities %)  order)))))
+
+(defn create-crossover-operator []
+  (crossover/create-1p-vector-crossover tsp-crossover-probability rand-int rand))
+
+(defn create-mutation-operator [cities]
+  )
