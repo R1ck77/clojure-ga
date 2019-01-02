@@ -17,4 +17,10 @@
                                                      0.05 0.075
                                                      0.1 0.125
                                                      0.15 0.175]))))))
-
+(deftest test-distance
+  (testing "distance between two cities"
+    (is (= 1.0 (tsp/travel-length [[0 0] [1 0]] [0 1])))
+    (is (= 1.0 (tsp/travel-length [[0 0] [1 0]] [1 0]))))
+  (testing "distance between three cities, in different order"
+    (is (= 20.0 (tsp/travel-length [[0 0] [0 10] [10 10]] [0 1 2])))
+    (is (= (+ (* 10 (Math/sqrt 2)) 10) (tsp/travel-length [[0 0] [0 10] [10 10]] [0 2 1])))))

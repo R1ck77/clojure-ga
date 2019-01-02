@@ -11,5 +11,12 @@
      (repeatedly N #(vector (rand) (rand)))
      (throw (IllegalArgumentException. "N must be > 1")))))
 
+(defn- distance [[ax ay] [bx by]]
+  (let [x-diff (- ax bx)
+        y-diff (- ay by)]
+    (Math/sqrt (+ (* x-diff x-diff)
+                  (* y-diff y-diff)))))
 
-
+(defn travel-length [cities order]
+  (apply + (map #(apply distance %)
+                (partition 2 1 (map #(get cities %)  order)))))
