@@ -1,15 +1,16 @@
 (ns clojure-ga.core
-  (:require 
-            [clojure-ga.words.words :as words])
+  (:require [clojure-ga.tsp.demo :as demo])
   (:gen-class))
 
 (defn -main
-  [& args]
-  (let [results (words/simulation (Integer/valueOf (or (first args) 10))
-                                  (Integer/valueOf (or (second args) 100))
-                                  (Integer/valueOf (or (get args 2) 1000)))]
-    (doall
-     (map (fn [[score result]]
-            (println (str score " : " (apply str result))))
-          (reverse (take 10 (sort-by #(- (first %)) results))))))
+  [& [N-string generations-s size-s cross-range-s mutation-range-s repetitions-s]]
+  (dorun
+   (map (fn [[[x y] result]]
+          (println x y result))
+        (take 10 (demo/best-meta-p (Integer/valueOf N-string)
+                                   (Integer/valueOf generations-s)
+                                   (Integer/valueOf size-s)
+                                   (eval (read-string cross-range-s))
+                                   (eval (read-string mutation-range-s))
+                                   (Integer/valueOf repetitions-s)))))
   (shutdown-agents))

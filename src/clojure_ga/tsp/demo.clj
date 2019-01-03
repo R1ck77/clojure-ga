@@ -124,7 +124,7 @@
                :rand-int-f rand-int
                :rand-nth-f rand-nth}))
 
-(defn meta-p [N generations population-size ticks n-repetitions]
+(defn meta-p [N generations population-size cross-range mutation-range n-repetitions]
   (let [challenge (gen-cities N rand)
         base-parameters (hash-map :mutation-p nil
                                   :crossover-p nil
@@ -140,9 +140,9 @@
                        (/ (reduce + (repeatedly n-repetitions
                                                 #(first (best-result (simulation challenge generations population-size parameters) challenge))))
                           n-repetitions))))
-           (for [crossover-p (range 0 1 ticks)
-                 mutation-p (range 0 1 ticks)]
+           (for [crossover-p cross-range
+                 mutation-p mutation-range]
              (vector crossover-p mutation-p))))))
 
-(defn best-meta-p [N generations population-size ticks n-repetitions]
-  (sort-by second (meta-p N generations population-size ticks n-repetitions)))
+(defn best-meta-p [N generations population-size cross-range mutation-range n-repetitions]
+  (sort-by second (meta-p N generations population-size cross-range mutation-range n-repetitions)))
