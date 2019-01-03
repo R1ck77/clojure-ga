@@ -94,10 +94,16 @@
     (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown cities generations))
                          (repeatedly population-size #(new-random-route (count cities) rand-int-f)))))
 
+(defn- score-population [population cities]
+  (sort-by first (map #(vector (travel-length cities %) %) population)))
+
+(defn- best-result [population cities]
+  (first (score-population population cities))) 
+
 (defn simulation-with-output
   [cities generations population-size parameters]
   (let [results (simulation cities generations population-size parameters)]
-        (let [best-scored-results (sort-by first (map #(vector (travel-length cities %) %) results))
+        (let [best-scored-results (score-population results cities)
               best-results (map second best-scored-results)
               best-scores (take 10 (map first best-scored-results))]
           (println "* Best scores")
@@ -118,3 +124,20 @@
                :rand-int-f rand-int
                :rand-nth-f rand-nth}))
 
+(defn meta-p [N generations population-size ticks n-repetitions]
+  (let [challenge (gen-cities N rand)
+        base-parameters (hash-map :mutation-p nil
+                                  :crossover-p nil
+                                  :tournament-rank 2
+                                  :rand-f rand
+                                  :rand-int-f
+                                  rand-int
+                                  :rand-nth-f rand-nth)]
+    (doall
+     (for [crossover-p (range 0 1 ticks)
+           mutation-p (range 0 1 ticks)]
+       (vector [crossover-p mutation-p]
+               (let [parameters (merge base-parameters {:mutation-p mutation-p, :crossover-p crossover-p})]
+                 (/ (reduce + (repeatedly n-repetitions
+                                          #(first (best-result (simulation challenge generations population-size parameters) challenge))))
+                    n-repetitions)))))))
