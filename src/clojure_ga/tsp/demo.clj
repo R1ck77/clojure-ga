@@ -91,18 +91,21 @@
   (let [evolver (simple/->SimpleGA (create-tournament-selector tournament-rank cities rand-nth-f)
                                    (create-crossover-operator crossover-p rand-f rand-nth-f)
                                    (create-mutation-operator mutation-p rand-f rand-int-f))]
-    (println "TODO: put the challenge here somehow")
-    (let [simulation (simple/->SimpleSimulation evolver (create-countdown cities generations))
-          population (repeatedly population-size #(new-random-route (count cities) rand-int-f))]
-      (let [best-scored-results (sort-by first (map #(vector (travel-length cities %) %) (simple/evolve-while simulation population)))
-            best-results (map second best-scored-results)
-            best-scores (take 10 (map first best-scored-results))]
-        (println "* Best scores")
-        (dorun (map println (reverse best-scores)))
-        (println "* Best solution")
-        (dorun (map #(let [city (get cities %)]
-                       (println (first city) (second city) ))
-                    (first best-results)))))))
+    (simple/evolve-while (simple/->SimpleSimulation evolver (create-countdown cities generations))
+                         (repeatedly population-size #(new-random-route (count cities) rand-int-f)))))
+
+(defn simulation-with-output
+  [cities generations population-size parameters]
+  (let [results (simulation cities generations population-size parameters)]
+        (let [best-scored-results (sort-by first (map #(vector (travel-length cities %) %) results))
+              best-results (map second best-scored-results)
+              best-scores (take 10 (map first best-scored-results))]
+          (println "* Best scores")
+          (dorun (map println (reverse best-scores)))
+          (println "* Best solution")
+          (dorun (map #(let [city (get cities %)]
+                         (println (first city) (second city) ))
+                      (first best-results))))))
 
 (defn simple-simulation [N generations population-size]
   (simulation (gen-cities N rand)
@@ -114,3 +117,4 @@
                :rand-f rand
                :rand-int-f rand-int
                :rand-nth-f rand-nth}))
+
