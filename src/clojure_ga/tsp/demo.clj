@@ -134,10 +134,15 @@
                                   rand-int
                                   :rand-nth-f rand-nth)]
     (doall
-     (for [crossover-p (range 0 1 ticks)
-           mutation-p (range 0 1 ticks)]
-       (vector [crossover-p mutation-p]
-               (let [parameters (merge base-parameters {:mutation-p mutation-p, :crossover-p crossover-p})]
-                 (/ (reduce + (repeatedly n-repetitions
-                                          #(first (best-result (simulation challenge generations population-size parameters) challenge))))
-                    n-repetitions)))))))
+     (pmap (fn [[crossover-p mutation-p :as parameters]]
+             (vector parameters
+                     (let [parameters (merge base-parameters {:mutation-p mutation-p, :crossover-p crossover-p})]
+                       (/ (reduce + (repeatedly n-repetitions
+                                                #(first (best-result (simulation challenge generations population-size parameters) challenge))))
+                          n-repetitions))))
+           (for [crossover-p (range 0 1 ticks)
+                 mutation-p (range 0 1 ticks)]
+             (vector crossover-p mutation-p))))))
+
+(defn best-meta-p [N generations population-size ticks n-repetitions]
+  (sort-by second (meta-p N generations population-size ticks n-repetitions)))
